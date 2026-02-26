@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sobre — João Dahan</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .page-hero {
+      padding: 10rem 3rem 4rem;
+      position: relative; z-index: 1;
+    }
+    .page-hero-inner { max-width: 1000px; margin: 0 auto; }
+
+    .intro-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: start;
+    }
+
+    .intro-left h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(3rem, 7vw, 5.5rem);
+      font-weight: 800; color: var(--white);
+      line-height: 1; letter-spacing: -1.5px;
+      margin-bottom: 2rem;
+      opacity: 0; animation: fadeUp 0.7s ease forwards 0.1s;
+    }
+
+    .intro-right {
+      opacity: 0; animation: fadeUp 0.7s ease forwards 0.3s;
+      padding-top: 1rem;
+    }
+    .intro-right p {
+      color: var(--muted); font-size: 1rem;
+      line-height: 1.8; font-weight: 300;
+      margin-bottom: 1.25rem;
+    }
+    .intro-right p strong { color: var(--text); font-weight: 500; }
+
+    /* ── FACTS ── */
+    .facts-row {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 1px; border: 1px solid var(--border);
+      border-radius: 8px; overflow: hidden;
+      margin-top: 3rem;
+    }
+    .fact-item {
+      background: var(--surface); padding: 2rem 1.75rem;
+      transition: background 0.2s;
+    }
+    .fact-item:hover { background: rgba(71,23,84,0.2); }
+    .fact-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 2.5rem; font-weight: 800;
+      color: var(--accent); letter-spacing: -1px;
+      line-height: 1; margin-bottom: 0.4rem;
+    }
+    .fact-label { font-size: 0.82rem; color: var(--muted); }
+
+    /* ── TIMELINE ── */
+    #experiencia { background: var(--bg2); }
+
+    .timeline { display: flex; flex-direction: column; gap: 0; }
+    .tl-item {
+      display: grid; grid-template-columns: 140px 1fr;
+      gap: 2rem; padding: 2rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .tl-item:last-child { border-bottom: none; }
+    .tl-year {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem; color: var(--muted);
+      letter-spacing: 2px; padding-top: 0.25rem;
+    }
+    .tl-content h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem; font-weight: 700;
+      color: var(--white); margin-bottom: 0.4rem;
+    }
+    .tl-content p { font-size: 0.9rem; color: var(--muted); line-height: 1.7; }
+
+    /* ── ABORDAGEM ── */
+    .approach-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 1px; border: 1px solid var(--border);
+      border-radius: 8px; overflow: hidden;
+    }
+    .approach-item {
+      background: var(--surface); padding: 2rem;
+      transition: background 0.2s;
+    }
+    .approach-item:hover { background: rgba(71,23,84,0.18); }
+    .approach-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem; color: var(--accent);
+      letter-spacing: 2px; margin-bottom: 1rem;
+    }
+    .approach-item h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.05rem; font-weight: 700;
+      color: var(--white); margin-bottom: 0.5rem;
+    }
+    .approach-item p { font-size: 0.85rem; color: var(--muted); line-height: 1.65; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(25px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 768px) {
+      .page-hero { padding: 8rem 1.5rem 3rem; }
+      .intro-grid { grid-template-columns: 1fr; gap: 2rem; }
+      .facts-row { grid-template-columns: 1fr 1fr; }
+      .tl-item { grid-template-columns: 1fr; gap: 0.25rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="ambient amb-1"></div>
+<div class="ambient amb-2"></div>
+
+<nav>
+  <a href="index.html" class="nav-logo">JD<span>.</span></a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="sobre.html" class="active">Sobre</a></li>
+    <li><a href="projetos.html">Projetos</a></li>
+    <li><a href="index.html#contato">Contato</a></li>
+  </ul>
+  <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+</nav>
+
+<div class="page">
+
+  <div class="page-hero">
+    <div class="page-hero-inner">
+      <div class="intro-grid">
+        <div class="intro-left">
+          <p class="eyebrow" style="opacity:1;animation:none;">Sobre</p>
+          <h1>João<br>Dahan.</h1>
+        </div>
+        <div class="intro-right">
+          <p>Desenvolvedor web full-stack, 21 anos. Construo interfaces e sistemas do zero — com atenção a cada detalhe, do design ao banco de dados.</p>
+          <p>Trabalho com <strong>JavaScript, React, Node.js, Python e SQL</strong>. Cada projeto entregue é resultado direto de código limpo e decisões técnicas conscientes.</p>
+          <p>Disponível para projetos <strong>freelance</strong> e oportunidades de trabalho.</p>
+          <div style="margin-top:2rem;">
+            <a href="https://wa.me/5521970913261" target="_blank" class="btn btn-fill">Falar pelo WhatsApp →</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="facts-row">
+        <div class="fact-item reveal">
+          <div class="fact-num">21</div>
+          <div class="fact-label">Anos de idade</div>
+        </div>
+        <div class="fact-item reveal">
+          <div class="fact-num">7+</div>
+          <div class="fact-label">Projetos entregues</div>
+        </div>
+        <div class="fact-item reveal">
+          <div class="fact-num">Full</div>
+          <div class="fact-label">Stack — front e back</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hr"></div>
+
+  <section id="experiencia">
+    <div class="section-wrap">
+      <p class="eyebrow">Trajetória</p>
+      <h2 class="page-title" style="font-size:clamp(2rem,4vw,3rem);margin-bottom:2.5rem;">Histórico</h2>
+      <div class="timeline">
+        <div class="tl-item reveal">
+          <span class="tl-year">2021 — Hoje</span>
+          <div class="tl-content">
+            <h3>Desenvolvimento Freelance</h3>
+            <p>Projetos de sites institucionais, landing pages e sistemas web para clientes. Entrega completa: planejamento, desenvolvimento e deploy.</p>
+          </div>
+        </div>
+        <div class="tl-item reveal">
+          <span class="tl-year">2023</span>
+          <div class="tl-content">
+            <h3>Coleção Link in Bio</h3>
+            <p>Desenvolvimento de 6 variações de página Link in Bio. Layouts distintos, cada um com identidade visual própria.</p>
+          </div>
+        </div>
+        <div class="tl-item reveal">
+          <span class="tl-year">2024</span>
+          <div class="tl-content">
+            <h3>CEMU — Centro Educacional de Muriqui</h3>
+            <p>Site institucional completo com sistema de matrícula online. Interface responsiva e funcional.</p>
+          </div>
+        </div>
+        <div class="tl-item reveal">
+          <span class="tl-year">Em curso</span>
+          <div class="tl-content">
+            <h3>Expansão de Stack</h3>
+            <p>Aprofundamento em React, Node.js e arquitetura de sistemas. Novos projetos em desenvolvimento.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="hr"></div>
+
+  <section id="abordagem">
+    <div class="section-wrap">
+      <p class="eyebrow">Forma de trabalhar</p>
+      <h2 class="page-title" style="font-size:clamp(2rem,4vw,3rem);margin-bottom:2.5rem;">Abordagem</h2>
+      <div class="approach-grid">
+        <div class="approach-item reveal">
+          <p class="approach-num">01</p>
+          <h3>Código limpo</h3>
+          <p>Estrutura organizada, sem gambiarras. Fácil de manter e escalar.</p>
+        </div>
+        <div class="approach-item reveal">
+          <p class="approach-num">02</p>
+          <h3>Entrega no prazo</h3>
+          <p>Prazos combinados são cumpridos. Comunicação clara durante o processo.</p>
+        </div>
+        <div class="approach-item reveal">
+          <p class="approach-num">03</p>
+          <h3>Full-stack</h3>
+          <p>Interface e servidor desenvolvidos por mim. Um único ponto de contato para o projeto completo.</p>
+        </div>
+        <div class="approach-item reveal">
+          <p class="approach-num">04</p>
+          <h3>Foco no resultado</h3>
+          <p>O objetivo é que o produto funcione e resolva o problema. Nada além disso.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <a href="index.html" class="footer-logo">JD<span>.</span></a>
+  <div class="footer-right">
+    <a href="projetos.html">Projetos</a>
+    <a href="https://github.com/dahan1981" target="_blank">GitHub</a>
+    <a href="https://wa.me/5521970913261" target="_blank">WhatsApp</a>
+  </div>
+</footer>
+
+<script>
+  const hb = document.getElementById('hamburger');
+  const nl = document.getElementById('navLinks');
+  hb.addEventListener('click', () => nl.classList.toggle('open'));
+  nl.querySelectorAll('a').forEach(a => a.addEventListener('click', () => nl.classList.remove('open')));
+
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) setTimeout(() => e.target.classList.add('visible'), i * 80);
+    });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>

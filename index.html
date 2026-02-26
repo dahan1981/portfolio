@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>João Dahan — Web Developer</title>
+  <meta name="description" content="Desenvolvedor Web Full-stack. Construo sites e aplicações que funcionam." />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* ── HERO ── */
+    #hero {
+      min-height: 100vh;
+      display: flex; align-items: center;
+      padding: 8rem 3rem 4rem;
+      position: relative; z-index: 1;
+    }
+    .hero-inner { max-width: 1000px; margin: 0 auto; width: 100%; }
+
+    .hero-eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem; color: var(--accent);
+      letter-spacing: 3px; text-transform: uppercase;
+      margin-bottom: 2rem;
+      opacity: 0; animation: fadeUp 0.7s ease forwards 0.1s;
+    }
+
+    .hero-title {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(3.5rem, 10vw, 8rem);
+      font-weight: 800; color: var(--white);
+      line-height: 1; letter-spacing: -2px;
+      margin-bottom: 2rem;
+      opacity: 0; animation: fadeUp 0.7s ease forwards 0.25s;
+    }
+    .hero-title .name-line { display: block; }
+    .hero-title .role-line {
+      display: block; color: transparent;
+      -webkit-text-stroke: 1px rgba(255,255,255,0.18);
+    }
+
+    .hero-desc {
+      font-size: 1.05rem; color: var(--muted);
+      max-width: 460px; line-height: 1.75;
+      margin-bottom: 3rem; font-weight: 300;
+      opacity: 0; animation: fadeUp 0.7s ease forwards 0.4s;
+    }
+
+    .hero-actions {
+      display: flex; gap: 1rem; flex-wrap: wrap;
+      opacity: 0; animation: fadeUp 0.7s ease forwards 0.55s;
+    }
+
+    /* ── SKILLS (home) ── */
+    #skills { background: var(--bg2); }
+
+    .skills-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 1px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .skill-item {
+      padding: 1.75rem 1.5rem;
+      background: var(--surface);
+      display: flex; flex-direction: column; gap: 0.6rem;
+      transition: background 0.2s;
+      cursor: default;
+    }
+    .skill-item:hover { background: rgba(71,23,84,0.25); }
+    .skill-item .s-name {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem; color: var(--text); font-weight: 500;
+    }
+    .skill-item .s-level { height: 2px; background: var(--border); border-radius: 2px; overflow: hidden; }
+    .skill-item .s-level-fill {
+      height: 100%; background: var(--accent); border-radius: 2px;
+      width: 0; transition: width 1.2s ease;
+    }
+    .skill-item.visible .s-level-fill { width: var(--level); }
+
+    /* ── WORK TEASER ── */
+    .work-teaser-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 1px; border: 1px solid var(--border);
+      border-radius: 8px; overflow: hidden;
+    }
+    .work-teaser-item {
+      background: var(--surface); padding: 2.5rem;
+      display: flex; flex-direction: column; justify-content: space-between;
+      min-height: 220px; transition: background 0.25s;
+      text-decoration: none; position: relative; overflow: hidden;
+    }
+    .work-teaser-item::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(71,23,84,0.2), transparent);
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .work-teaser-item:hover::before { opacity: 1; }
+    .work-teaser-item:hover { background: #130c1c; }
+
+    .wt-num { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--muted); letter-spacing: 2px; }
+    .wt-title { font-family: 'Syne', sans-serif; font-size: 1.4rem; font-weight: 700; color: var(--white); letter-spacing: -0.5px; margin: 0.75rem 0 0.4rem; }
+    .wt-desc { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
+    .wt-arrow { align-self: flex-end; font-size: 1.2rem; color: var(--accent); transition: transform 0.2s; }
+    .work-teaser-item:hover .wt-arrow { transform: translate(4px, -4px); }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(25px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 640px) {
+      #hero { padding: 7rem 1.5rem 3rem; }
+      .work-teaser-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="ambient amb-1"></div>
+<div class="ambient amb-2"></div>
+
+<nav>
+  <a href="index.html" class="nav-logo">JD<span>.</span></a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="index.html" class="active">Home</a></li>
+    <li><a href="sobre.html">Sobre</a></li>
+    <li><a href="projetos.html">Projetos</a></li>
+    <li><a href="#contato">Contato</a></li>
+  </ul>
+  <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+</nav>
+
+<div class="page">
+
+  <section id="hero">
+    <div class="hero-inner">
+      <p class="hero-eyebrow">Full-stack Web Developer</p>
+      <h1 class="hero-title">
+        <span class="name-line">João Dahan</span>
+        <span class="role-line">Builder.</span>
+      </h1>
+      <p class="hero-desc">
+        Desenvolvo sites e aplicações web do zero — da interface ao servidor. Entrego o que funciona, no prazo, sem enrolação.
+      </p>
+      <div class="hero-actions">
+        <a href="projetos.html" class="btn btn-fill">Ver projetos →</a>
+        <a href="#contato" class="btn btn-outline">Contato</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="hr"></div>
+
+  <section id="skills">
+    <div class="section-wrap">
+      <p class="eyebrow">Stack</p>
+      <h2 class="page-title" style="font-size:clamp(2rem,4vw,3rem);margin-bottom:2.5rem;">Tecnologias</h2>
+      <div class="skills-list">
+        <div class="skill-item reveal" style="--level:90%"><span class="s-name">JavaScript</span><div class="s-level"><div class="s-level-fill"></div></div></div>
+        <div class="skill-item reveal" style="--level:82%"><span class="s-name">React</span><div class="s-level"><div class="s-level-fill"></div></div></div>
+        <div class="skill-item reveal" style="--level:85%"><span class="s-name">Node.js</span><div class="s-level"><div class="s-level-fill"></div></div></div>
+        <div class="skill-item reveal" style="--level:75%"><span class="s-name">Python</span><div class="s-level"><div class="s-level-fill"></div></div></div>
+        <div class="skill-item reveal" style="--level:80%"><span class="s-name">SQL</span><div class="s-level"><div class="s-level-fill"></div></div></div>
+        <div class="skill-item reveal" style="--level:92%"><span class="s-name">HTML / CSS</span><div class="s-level"><div class="s-level-fill"></div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="hr"></div>
+
+  <section id="work-teaser">
+    <div class="section-wrap">
+      <p class="eyebrow">Trabalhos</p>
+      <h2 class="page-title" style="font-size:clamp(2rem,4vw,3rem);margin-bottom:2.5rem;">Seleção</h2>
+      <div class="work-teaser-grid">
+        <a href="projetos.html" class="work-teaser-item reveal">
+          <p class="wt-num">01 — Landing Page</p>
+          <div>
+            <p class="wt-title">Coleção Link in Bio</p>
+            <p class="wt-desc">6 variações de página. HTML, CSS, JS puro.</p>
+          </div>
+          <span class="wt-arrow">↗</span>
+        </a>
+        <a href="projetos.html" class="work-teaser-item reveal">
+          <p class="wt-num">02 — Site Institucional</p>
+          <div>
+            <p class="wt-title">CEMU</p>
+            <p class="wt-desc">Site escolar completo com matrícula online.</p>
+          </div>
+          <span class="wt-arrow">↗</span>
+        </a>
+      </div>
+      <div style="margin-top:2rem;">
+        <a href="projetos.html" class="btn btn-outline">Todos os projetos →</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="hr"></div>
+
+  <section id="contato">
+    <div class="section-wrap">
+      <p class="eyebrow">Contato</p>
+      <h2 class="page-title" style="font-size:clamp(2rem,4vw,3rem);margin-bottom:1rem;">Tem um projeto?</h2>
+      <p class="reveal" style="color:var(--muted);max-width:400px;margin-bottom:2.5rem;font-weight:300;line-height:1.75;">
+        Me manda uma mensagem. Respondo rápido.
+      </p>
+      <div class="reveal" style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:2rem;">
+        <a href="https://wa.me/5521970913261" target="_blank" class="btn btn-fill">WhatsApp →</a>
+        <a href="mailto:equipejoaodahan@gmail.com" class="btn btn-outline">Email</a>
+      </div>
+      <div style="display:flex;gap:2rem;flex-wrap:wrap;">
+        <a href="https://instagram.com/dev.dahan" target="_blank" style="color:var(--muted);font-size:0.82rem;text-decoration:none;letter-spacing:1px;text-transform:uppercase;transition:color 0.2s;" onmouseover="this.style.color='var(--white)'" onmouseout="this.style.color='var(--muted)'">Instagram ↗</a>
+        <a href="https://github.com/dahan1981" target="_blank" style="color:var(--muted);font-size:0.82rem;text-decoration:none;letter-spacing:1px;text-transform:uppercase;transition:color 0.2s;" onmouseover="this.style.color='var(--white)'" onmouseout="this.style.color='var(--muted)'">GitHub ↗</a>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <a href="index.html" class="footer-logo">JD<span>.</span></a>
+  <div class="footer-right">
+    <a href="sobre.html">Sobre</a>
+    <a href="projetos.html">Projetos</a>
+    <a href="https://github.com/dahan1981" target="_blank">GitHub</a>
+  </div>
+</footer>
+
+<script>
+  const hb = document.getElementById('hamburger');
+  const nl = document.getElementById('navLinks');
+  hb.addEventListener('click', () => nl.classList.toggle('open'));
+  nl.querySelectorAll('a').forEach(a => a.addEventListener('click', () => nl.classList.remove('open')));
+
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) setTimeout(() => e.target.classList.add('visible'), i * 60);
+    });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>

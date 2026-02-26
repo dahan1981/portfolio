@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Projetos — João Dahan</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .page-hero {
+      padding: 10rem 3rem 5rem;
+      position: relative; z-index: 1;
+    }
+    .page-hero-inner { max-width: 1000px; margin: 0 auto; }
+
+    .page-hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(3rem, 8vw, 6.5rem);
+      font-weight: 800; color: var(--white);
+      line-height: 1; letter-spacing: -2px;
+      margin-bottom: 1.5rem;
+      opacity: 0; animation: fadeUp 0.7s ease forwards 0.15s;
+    }
+    .page-hero p {
+      color: var(--muted); font-size: 1rem;
+      font-weight: 300; max-width: 380px;
+      opacity: 0; animation: fadeUp 0.7s ease forwards 0.3s;
+    }
+
+    /* ── PROJECT LIST ── */
+    .projects-list {
+      display: flex; flex-direction: column; gap: 0;
+      border: 1px solid var(--border); border-radius: 8px; overflow: hidden;
+    }
+
+    .project-row {
+      display: grid;
+      grid-template-columns: 60px 1fr auto;
+      align-items: center;
+      gap: 2rem; padding: 2rem 2.5rem;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      text-decoration: none;
+      transition: background 0.2s;
+      position: relative;
+      cursor: pointer;
+    }
+    .project-row:last-child { border-bottom: none; }
+    .project-row:hover { background: rgba(71,23,84,0.2); }
+
+    .pr-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem; color: var(--muted); letter-spacing: 2px;
+    }
+
+    .pr-content { flex: 1; }
+    .pr-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.3rem; font-weight: 700;
+      color: var(--white); letter-spacing: -0.5px;
+      margin-bottom: 0.3rem;
+      transition: color 0.2s;
+    }
+    .project-row:hover .pr-title { color: var(--accent); }
+    .pr-desc { font-size: 0.85rem; color: var(--muted); line-height: 1.5; max-width: 500px; }
+
+    .pr-meta {
+      display: flex; flex-direction: column;
+      align-items: flex-end; gap: 0.5rem;
+    }
+    .pr-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; justify-content: flex-end; }
+    .tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem; color: var(--muted);
+      border: 1px solid var(--border);
+      padding: 2px 8px; border-radius: 50px;
+      letter-spacing: 0.5px;
+    }
+    .pr-arrow { font-size: 1rem; color: var(--accent); transition: transform 0.2s; }
+    .project-row:hover .pr-arrow { transform: translate(3px, -3px); }
+
+    /* ── EXPANDED DETAIL ── */
+    .project-detail {
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      display: none;
+      overflow: hidden;
+    }
+    .project-detail.open { display: block; }
+    .pd-inner { padding: 2.5rem 2.5rem 2.5rem 7rem; display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; }
+
+    .pd-section h4 {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem; color: var(--accent);
+      letter-spacing: 2px; text-transform: uppercase;
+      margin-bottom: 0.75rem;
+    }
+    .pd-section p { font-size: 0.88rem; color: var(--muted); line-height: 1.7; }
+    .pd-section ul { list-style: none; display: flex; flex-direction: column; gap: 0.4rem; }
+    .pd-section ul li {
+      font-size: 0.85rem; color: var(--muted);
+      padding-left: 1rem; position: relative;
+    }
+    .pd-section ul li::before { content: '—'; position: absolute; left: 0; color: var(--accent); }
+
+    .pd-cta { margin-top: 1.5rem; }
+
+    /* ── CTA BOTTOM ── */
+    .projects-cta {
+      margin-top: 4rem; padding: 3rem;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px;
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 2rem;
+    }
+    .projects-cta h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.3rem; font-weight: 700; color: var(--white);
+      margin-bottom: 0.4rem;
+    }
+    .projects-cta p { font-size: 0.85rem; color: var(--muted); }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(25px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 768px) {
+      .page-hero { padding: 8rem 1.5rem 3rem; }
+      .project-row { grid-template-columns: 40px 1fr; gap: 1rem; padding: 1.5rem; }
+      .pr-meta { display: none; }
+      .pd-inner { grid-template-columns: 1fr; padding: 1.5rem; gap: 1.5rem; }
+      .projects-cta { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+<div class="ambient amb-1"></div>
+<div class="ambient amb-2"></div>
+
+<nav>
+  <a href="index.html" class="nav-logo">JD<span>.</span></a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="sobre.html">Sobre</a></li>
+    <li><a href="projetos.html" class="active">Projetos</a></li>
+    <li><a href="index.html#contato">Contato</a></li>
+  </ul>
+  <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+</nav>
+
+<div class="page">
+
+  <div class="page-hero">
+    <div class="page-hero-inner">
+      <p class="eyebrow" style="opacity:1;animation:none;">Portfólio</p>
+      <h1>Projetos.</h1>
+      <p>Clique em um projeto para ver os detalhes.</p>
+    </div>
+  </div>
+
+  <div class="hr"></div>
+
+  <section>
+    <div class="section-wrap">
+      <div class="projects-list">
+
+        <!-- PROJETO 1 -->
+        <div class="project-row reveal" onclick="toggleDetail('p1')">
+          <span class="pr-num">01</span>
+          <div class="pr-content">
+            <h3 class="pr-title">Coleção Link in Bio</h3>
+            <p class="pr-desc">6 variações de landing page para uso como Link in Bio. Layouts distintos, cada um com identidade visual própria e otimizado para mobile.</p>
+          </div>
+          <div class="pr-meta">
+            <div class="pr-tags">
+              <span class="tag">HTML</span>
+              <span class="tag">CSS</span>
+              <span class="tag">JS</span>
+            </div>
+            <span class="pr-arrow" id="arrow-p1">↗</span>
+          </div>
+        </div>
+        <div class="project-detail" id="p1">
+          <div class="pd-inner">
+            <div class="pd-section">
+              <h4>Sobre o projeto</h4>
+              <p>Coleção de 6 páginas Link in Bio desenvolvidas para clientes. Cada variação tem layout, tipografia e paleta de cores independentes. Totalmente responsivos e otimizados para carregamento rápido.</p>
+            </div>
+            <div class="pd-section">
+              <h4>Entregáveis</h4>
+              <ul>
+                <li>Layout padrão claro (Sage)</li>
+                <li>Layout portfólio (Portfolio)</li>
+                <li>Layout dark</li>
+                <li>Layout com foto circular</li>
+                <li>Layout full background</li>
+                <li>Layout split-screen</li>
+              </ul>
+              <div class="pd-cta">
+                <a href="https://wa.me/5521970913261?text=Quero%20um%20Link%20in%20Bio" target="_blank" class="btn btn-fill" style="font-size:0.82rem;">Solicitar similar →</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PROJETO 2 -->
+        <div class="project-row reveal" onclick="toggleDetail('p2')">
+          <span class="pr-num">02</span>
+          <div class="pr-content">
+            <h3 class="pr-title">CEMU — Centro Educacional de Muriqui</h3>
+            <p class="pr-desc">Site institucional completo para centro educacional. Inclui sistema de matrícula online, navegação entre páginas e identidade visual desenvolvida do zero.</p>
+          </div>
+          <div class="pr-meta">
+            <div class="pr-tags">
+              <span class="tag">HTML</span>
+              <span class="tag">CSS</span>
+              <span class="tag">JS</span>
+            </div>
+            <span class="pr-arrow" id="arrow-p2">↗</span>
+          </div>
+        </div>
+        <div class="project-detail" id="p2">
+          <div class="pd-inner">
+            <div class="pd-section">
+              <h4>Sobre o projeto</h4>
+              <p>Site institucional para o CEMU com múltiplas páginas: home, informações da escola e formulário de matrícula online. Design com identidade visual em vermelho e amarelo, tipografia Playfair Display.</p>
+            </div>
+            <div class="pd-section">
+              <h4>Funcionalidades</h4>
+              <ul>
+                <li>Página principal com seções completas</li>
+                <li>Sistema de matrícula online</li>
+                <li>CSS compartilhado entre páginas</li>
+                <li>Layout 100% responsivo</li>
+                <li>Animações de scroll</li>
+              </ul>
+              <div class="pd-cta">
+                <a href="https://wa.me/5521970913261?text=Quero%20um%20site%20institucional" target="_blank" class="btn btn-fill" style="font-size:0.82rem;">Solicitar similar →</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PROJETO 3 — EM BREVE -->
+        <div class="project-row reveal" style="opacity:0.45;cursor:default;" onclick="">
+          <span class="pr-num">03</span>
+          <div class="pr-content">
+            <h3 class="pr-title" style="color:var(--muted);">Novo projeto</h3>
+            <p class="pr-desc">Em desenvolvimento. Acompanhe pelo GitHub.</p>
+          </div>
+          <div class="pr-meta">
+            <div class="pr-tags"><span class="tag">Em breve</span></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- CTA BOTTOM -->
+      <div class="projects-cta reveal">
+        <div>
+          <h3>Quer um projeto similar?</h3>
+          <p>Me manda uma mensagem com a sua ideia.</p>
+        </div>
+        <a href="https://wa.me/5521970913261" target="_blank" class="btn btn-fill">WhatsApp →</a>
+      </div>
+
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <a href="index.html" class="footer-logo">JD<span>.</span></a>
+  <div class="footer-right">
+    <a href="sobre.html">Sobre</a>
+    <a href="https://github.com/dahan1981" target="_blank">GitHub</a>
+    <a href="https://wa.me/5521970913261" target="_blank">WhatsApp</a>
+  </div>
+</footer>
+
+<script>
+  const hb = document.getElementById('hamburger');
+  const nl = document.getElementById('navLinks');
+  hb.addEventListener('click', () => nl.classList.toggle('open'));
+  nl.querySelectorAll('a').forEach(a => a.addEventListener('click', () => nl.classList.remove('open')));
+
+  function toggleDetail(id) {
+    const detail = document.getElementById(id);
+    const arrow = document.getElementById('arrow-' + id);
+    const isOpen = detail.classList.contains('open');
+    // close all
+    document.querySelectorAll('.project-detail').forEach(d => d.classList.remove('open'));
+    document.querySelectorAll('.pr-arrow').forEach(a => { if(a) a.style.transform = ''; });
+    // open clicked
+    if (!isOpen) {
+      detail.classList.add('open');
+      if (arrow) arrow.style.transform = 'rotate(45deg)';
+    }
+  }
+
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) setTimeout(() => e.target.classList.add('visible'), i * 80);
+    });
+  }, { threshold: 0.05 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
