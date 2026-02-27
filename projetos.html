@@ -300,6 +300,9 @@
     }
   }
 
+  // Add js-loaded so reveal animations only run when JS is active
+  document.body.classList.add('js-loaded');
+
   const obs = new IntersectionObserver((entries) => {
     entries.forEach((e, i) => {
       if (e.isIntersecting) setTimeout(() => e.target.classList.add('visible'), i * 80);
