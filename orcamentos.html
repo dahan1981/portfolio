@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Orçamentos — João Dahan</title>
+  <link rel="icon" type="image/x-icon" href="favicon.ico" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .page-hero {
+      padding: 10rem 3rem 5rem;
+      position: relative; z-index: 1;
+    }
+    .page-hero-inner { max-width: 1000px; margin: 0 auto; }
+
+    .page-hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(3rem, 8vw, 6.5rem);
+      font-weight: 800; color: var(--white);
+      line-height: 1; letter-spacing: -2px;
+      margin-bottom: 1.5rem;
+      opacity: 0; animation: fadeUp 0.7s ease forwards 0.15s;
+    }
+    .page-hero p {
+      color: var(--muted); font-size: 1rem;
+      font-weight: 300; max-width: 440px; line-height: 1.75;
+      opacity: 0; animation: fadeUp 0.7s ease forwards 0.3s;
+    }
+
+    /* ── PLANS GRID ── */
+    .plans-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .plan-card {
+      background: var(--surface);
+      padding: 2.5rem 2rem;
+      display: flex; flex-direction: column;
+      gap: 0; position: relative;
+      transition: background 0.25s;
+    }
+    .plan-card:hover { background: #160d1f; }
+
+    .plan-card.featured {
+      background: rgba(71,23,84,0.25);
+      border-left: 1px solid rgba(155,51,176,0.3);
+      border-right: 1px solid rgba(155,51,176,0.3);
+    }
+    .plan-card.featured:hover { background: rgba(71,23,84,0.4); }
+
+    .plan-badge {
+      display: inline-block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem; letter-spacing: 2px;
+      text-transform: uppercase;
+      background: var(--accent); color: var(--bg);
+      padding: 3px 10px; border-radius: 50px;
+      margin-bottom: 1.5rem;
+      align-self: flex-start;
+    }
+
+    .plan-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.3rem; font-weight: 700;
+      color: var(--white); margin-bottom: 0.5rem;
+      letter-spacing: -0.5px;
+    }
+
+    .plan-desc {
+      font-size: 0.85rem; color: var(--muted);
+      line-height: 1.6; margin-bottom: 2rem;
+    }
+
+    .plan-price {
+      margin-bottom: 0.4rem;
+    }
+    .plan-price .from {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem; color: var(--muted);
+      letter-spacing: 1px; text-transform: uppercase;
+      display: block; margin-bottom: 0.25rem;
+    }
+    .plan-price .amount {
+      font-family: 'Syne', sans-serif;
+      font-size: 2.4rem; font-weight: 800;
+      color: var(--white); letter-spacing: -1px;
+      line-height: 1;
+    }
+    .plan-price .currency {
+      font-size: 1.2rem; font-weight: 600;
+      vertical-align: super; color: var(--accent);
+    }
+
+    .plan-note {
+      font-size: 0.75rem; color: var(--accent);
+      margin-bottom: 2rem; font-style: italic;
+    }
+
+    .plan-features {
+      list-style: none;
+      display: flex; flex-direction: column; gap: 0.65rem;
+      margin-bottom: 2.5rem; flex: 1;
+    }
+    .plan-features li {
+      font-size: 0.85rem; color: var(--muted);
+      padding-left: 1.25rem; position: relative;
+      line-height: 1.5;
+    }
+    .plan-features li::before {
+      content: '—'; position: absolute; left: 0;
+      color: var(--accent);
+    }
+    .plan-features li strong { color: var(--text); font-weight: 500; }
+
+    .plan-cta {
+      display: flex; flex-direction: column; gap: 0.75rem;
+    }
+
+    .btn-plan {
+      display: flex; align-items: center; justify-content: center;
+      gap: 0.5rem; padding: 0.8rem 1.5rem;
+      border-radius: 4px; text-decoration: none;
+      font-size: 0.82rem; font-weight: 600;
+      letter-spacing: 0.3px; transition: all 0.2s;
+      font-family: 'Inter', sans-serif;
+      text-align: center;
+    }
+    .btn-plan-fill {
+      background: var(--accent); color: var(--bg);
+    }
+    .btn-plan-fill:hover { background: #b03ec8; box-shadow: 0 0 20px rgba(155,51,176,0.3); }
+    .btn-plan-outline {
+      background: transparent; color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-plan-outline:hover { border-color: var(--muted); color: var(--white); }
+
+    /* ── DISCLAIMER ── */
+    .disclaimer {
+      margin-top: 1.5rem;
+      padding: 1.25rem 1.5rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.8rem; color: var(--muted);
+      line-height: 1.6;
+    }
+    .disclaimer span { color: var(--accent); }
+
+    /* ── FAQ / INFO ── */
+    #incluso { background: var(--bg2); }
+
+    .incluso-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1px; border: 1px solid var(--border);
+      border-radius: 8px; overflow: hidden;
+    }
+    .incluso-item {
+      background: var(--surface); padding: 1.75rem 1.5rem;
+      transition: background 0.2s;
+    }
+    .incluso-item:hover { background: rgba(71,23,84,0.18); }
+    .incluso-icon { font-size: 1.3rem; margin-bottom: 0.75rem; display: block; }
+    .incluso-item h4 {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.95rem; font-weight: 700;
+      color: var(--white); margin-bottom: 0.35rem;
+    }
+    .incluso-item p { font-size: 0.82rem; color: var(--muted); line-height: 1.55; }
+
+    /* ── CONTATO CTA ── */
+    .contact-cta {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 3.5rem 3rem;
+      text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .contact-cta::before {
+      content: '';
+      position: absolute; top: -50%; left: 50%; transform: translateX(-50%);
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(71,23,84,0.3), transparent 70%);
+      pointer-events: none;
+    }
+    .contact-cta h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      font-weight: 800; color: var(--white);
+      letter-spacing: -1px; margin-bottom: 0.75rem;
+      position: relative;
+    }
+    .contact-cta p {
+      color: var(--muted); font-size: 0.95rem;
+      margin-bottom: 2rem; font-weight: 300;
+      position: relative;
+    }
+    .contact-cta-btns {
+      display: flex; gap: 1rem; justify-content: center;
+      flex-wrap: wrap; position: relative;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(25px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 900px) {
+      .plans-grid { grid-template-columns: 1fr; }
+      .plan-card.featured { border-left: none; border-right: none; border-top: 1px solid rgba(155,51,176,0.3); border-bottom: 1px solid rgba(155,51,176,0.3); }
+      .page-hero { padding: 8rem 1.5rem 3rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="ambient amb-1"></div>
+<div class="ambient amb-2"></div>
+
+<nav>
+  <a href="index.html" class="nav-logo">JD<span>.</span></a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="sobre.html">Sobre</a></li>
+    <li><a href="projetos.html">Projetos</a></li>
+    <li><a href="orcamentos.html" class="active">Orçamentos</a></li>
+    <li><a href="index.html#contato">Contato</a></li>
+  </ul>
+  <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+</nav>
+
+<div class="page">
+
+  <div class="page-hero">
+    <div class="page-hero-inner">
+      <p class="eyebrow" style="opacity:1;animation:none;">Serviços</p>
+      <h1>Orçamentos.</h1>
+      <p>Preços claros, sem surpresa. Cada plano inclui 1 ano de domínio grátis*.</p>
+    </div>
+  </div>
+
+  <div class="hr"></div>
+
+  <!-- PLANS -->
+  <section>
+    <div class="section-wrap">
+      <p class="eyebrow">Planos</p>
+      <h2 class="page-title" style="font-size:clamp(2rem,4vw,3rem);margin-bottom:2.5rem;">O que você precisa?</h2>
+
+      <div class="plans-grid">
+
+        <!-- LINK IN BIO -->
+        <div class="plan-card reveal">
+          <p class="plan-name">Link in Bio</p>
+          <p class="plan-desc">Página única para centralizar todos os seus links. Ideal para Instagram, TikTok e redes sociais.</p>
+          <div class="plan-price">
+            <span class="from">A partir de</span>
+            <span class="amount"><span class="currency">R$</span>179</span>
+          </div>
+          <p class="plan-note">*verificar domínios gratuitos disponíveis</p>
+          <ul class="plan-features">
+            <li><strong>1 página</strong> personalizada</li>
+            <li>Layout exclusivo</li>
+            <li>Links ilimitados</li>
+            <li>100% responsivo</li>
+            <li><strong>1 ano de domínio grátis*</strong></li>
+            <li>Entrega em até 5 dias</li>
+          </ul>
+          <div class="plan-cta">
+            <a href="https://wa.me/5521970913261?text=Ol%C3%A1%20Jo%C3%A3o%2C%20tenho%20interesse%20no%20plano%20Link%20in%20Bio" target="_blank" class="btn-plan btn-plan-fill">WhatsApp →</a>
+            <a href="https://instagram.com/dev.dahan" target="_blank" class="btn-plan btn-plan-outline">Instagram</a>
+          </div>
+        </div>
+
+        <!-- SITE COMPLETO -->
+        <div class="plan-card featured reveal">
+          <span class="plan-badge">Mais completo</span>
+          <p class="plan-name">Site Completo</p>
+          <p class="plan-desc">Várias páginas com seções de sobre, serviços, orçamento e agendamento. Para negócios e profissionais.</p>
+          <div class="plan-price">
+            <span class="from">A partir de</span>
+            <span class="amount"><span class="currency">R$</span>250</span>
+          </div>
+          <p class="plan-note">*verificar domínios gratuitos disponíveis</p>
+          <ul class="plan-features">
+            <li><strong>Múltiplas páginas</strong></li>
+            <li>Seção Sobre, Serviços e Contato</li>
+            <li>Formulário de orçamento</li>
+            <li>Sistema de agendamento</li>
+            <li>100% responsivo</li>
+            <li><strong>1 ano de domínio grátis*</strong></li>
+            <li>Entrega em até 10 dias</li>
+          </ul>
+          <div class="plan-cta">
+            <a href="https://wa.me/5521970913261?text=Ol%C3%A1%20Jo%C3%A3o%2C%20tenho%20interesse%20no%20plano%20Site%20Completo" target="_blank" class="btn-plan btn-plan-fill">WhatsApp →</a>
+            <a href="https://instagram.com/dev.dahan" target="_blank" class="btn-plan btn-plan-outline">Instagram</a>
+          </div>
+        </div>
+
+        <!-- PORTFÓLIO / CATÁLOGO -->
+        <div class="plan-card reveal">
+          <p class="plan-name">Portfólio / Catálogo</p>
+          <p class="plan-desc">Site para exibir trabalhos, produtos ou serviços. Ideal para fotógrafos, designers e lojas.</p>
+          <div class="plan-price">
+            <span class="from">A partir de</span>
+            <span class="amount"><span class="currency">R$</span>200</span>
+          </div>
+          <p class="plan-note">*verificar domínios gratuitos disponíveis</p>
+          <ul class="plan-features">
+            <li>Galeria de projetos ou produtos</li>
+            <li>Layout profissional</li>
+            <li>Página de contato</li>
+            <li>100% responsivo</li>
+            <li><strong>1 ano de domínio grátis*</strong></li>
+            <li>Entrega em até 7 dias</li>
+          </ul>
+          <div class="plan-cta">
+            <a href="https://wa.me/5521970913261?text=Ol%C3%A1%20Jo%C3%A3o%2C%20tenho%20interesse%20no%20plano%20Portf%C3%B3lio" target="_blank" class="btn-plan btn-plan-fill">WhatsApp →</a>
+            <a href="https://instagram.com/dev.dahan" target="_blank" class="btn-plan btn-plan-outline">Instagram</a>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="disclaimer reveal">
+        <span>*</span> Domínio gratuito por 1 ano sujeito a disponibilidade. Domínios <strong>.com.br</strong>, <strong>.site</strong>, <strong>.online</strong> e outros — verificar opções disponíveis no momento da contratação. Após o primeiro ano, renovação por conta do cliente.
+      </div>
+    </div>
+  </section>
+
+  <div class="hr"></div>
+
+  <!-- O QUE ESTÁ INCLUSO -->
+  <section id="incluso">
+    <div class="section-wrap">
+      <p class="eyebrow">Incluso em todos os planos</p>
+      <h2 class="page-title" style="font-size:clamp(2rem,4vw,3rem);margin-bottom:2.5rem;">O que você recebe</h2>
+      <div class="incluso-grid">
+        <div class="incluso-item reveal">
+          <span class="incluso-icon">🌐</span>
+          <h4>Domínio grátis</h4>
+          <p>1 ano de domínio incluso em todos os planos*.</p>
+        </div>
+        <div class="incluso-item reveal">
+          <span class="incluso-icon">📱</span>
+          <h4>Responsivo</h4>
+          <p>Funciona em celular, tablet e desktop.</p>
+        </div>
+        <div class="incluso-item reveal">
+          <span class="incluso-icon">⚡</span>
+          <h4>Carregamento rápido</h4>
+          <p>Código limpo e otimizado para velocidade.</p>
+        </div>
+        <div class="incluso-item reveal">
+          <span class="incluso-icon">🚀</span>
+          <h4>Deploy incluso</h4>
+          <p>Site publicado e no ar, pronto para usar.</p>
+        </div>
+        <div class="incluso-item reveal">
+          <span class="incluso-icon">🔧</span>
+          <h4>Suporte pós-entrega</h4>
+          <p>Ajustes e correções após a entrega.</p>
+        </div>
+        <div class="incluso-item reveal">
+          <span class="incluso-icon">📄</span>
+          <h4>Código entregue</h4>
+          <p>Você fica com o código fonte do projeto.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="hr"></div>
+
+  <!-- CTA CONTATO -->
+  <section>
+    <div class="section-wrap">
+      <div class="contact-cta reveal">
+        <h2>Pronto para começar?</h2>
+        <p>Me manda uma mensagem com a sua ideia. Respondo rápido.</p>
+        <div class="contact-cta-btns">
+          <a href="https://wa.me/5521970913261" target="_blank" class="btn btn-fill">WhatsApp →</a>
+          <a href="https://instagram.com/dev.dahan" target="_blank" class="btn btn-outline">Instagram</a>
+          <a href="mailto:equipejoaodahan@gmail.com" class="btn btn-outline">Email</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <a href="index.html" class="footer-logo">JD<span>.</span></a>
+  <div class="footer-right">
+    <a href="projetos.html">Projetos</a>
+    <a href="https://github.com/dahan1981" target="_blank">GitHub</a>
+    <a href="https://wa.me/5521970913261" target="_blank">WhatsApp</a>
+  </div>
+</footer>
+
+<script>
+  const hb = document.getElementById('hamburger');
+  const nl = document.getElementById('navLinks');
+  hb.addEventListener('click', () => nl.classList.toggle('open'));
+  nl.querySelectorAll('a').forEach(a => a.addEventListener('click', () => nl.classList.remove('open')));
+
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) setTimeout(() => e.target.classList.add('visible'), i * 80);
+    });
+  }, { threshold: 0.05 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
