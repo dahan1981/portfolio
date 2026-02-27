@@ -30,7 +30,7 @@
     /* ── PLANS GRID ── */
     .plans-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(4, 1fr);
       gap: 1px;
       border: 1px solid var(--border);
       border-radius: 12px;
@@ -211,11 +211,77 @@
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    @media (max-width: 900px) {
+    @media (max-width: 1100px) {
+      .plans-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 600px) {
       .plans-grid { grid-template-columns: 1fr; }
       .plan-card.featured { border-left: none; border-right: none; border-top: 1px solid rgba(155,51,176,0.3); border-bottom: 1px solid rgba(155,51,176,0.3); }
       .page-hero { padding: 8rem 1.5rem 3rem; }
     }
+
+    /* ── COMBO ── */
+    .combo-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 0.75rem;
+    }
+    .combo-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px; padding: 2rem;
+      display: flex; flex-direction: column; gap: 1rem;
+      transition: border-color 0.25s, background 0.25s;
+      position: relative; overflow: hidden;
+    }
+    .combo-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--accent2), var(--accent));
+    }
+    .combo-card:hover {
+      border-color: rgba(155,51,176,0.4);
+      background: rgba(71,23,84,0.15);
+    }
+    .combo-tag {
+      font-family: 'JetBrains Mono', 'Courier New', monospace;
+      font-size: 0.65rem; color: var(--accent);
+      letter-spacing: 2px; text-transform: uppercase;
+    }
+    .combo-title {
+      font-family: 'Syne', 'Arial Black', sans-serif;
+      font-size: 1.15rem; font-weight: 700;
+      color: var(--white); letter-spacing: -0.3px;
+    }
+    .combo-items {
+      display: flex; flex-wrap: wrap; gap: 0.4rem;
+    }
+    .combo-item-tag {
+      background: rgba(155,51,176,0.12);
+      border: 1px solid rgba(155,51,176,0.25);
+      color: var(--text); font-size: 0.78rem;
+      padding: 4px 12px; border-radius: 50px;
+    }
+    .combo-price-row {
+      display: flex; align-items: baseline; gap: 0.5rem;
+      margin-top: auto;
+    }
+    .combo-from { font-size: 0.75rem; color: var(--muted); }
+    .combo-price {
+      font-family: 'Syne', 'Arial Black', sans-serif;
+      font-size: 2rem; font-weight: 800;
+      color: var(--white); letter-spacing: -1px;
+    }
+    .combo-currency { font-size: 1rem; color: var(--accent); }
+    .combo-note { font-size: 0.72rem; color: var(--accent); font-style: italic; }
+    .combo-btn {
+      display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+      padding: 0.75rem 1.25rem; border-radius: 4px;
+      text-decoration: none; font-size: 0.82rem; font-weight: 600;
+      background: var(--accent); color: var(--bg);
+      transition: background 0.2s, box-shadow 0.2s;
+      font-family: 'Inter', sans-serif;
+    }
+    .combo-btn:hover { background: #b03ec8; box-shadow: 0 0 20px rgba(155,51,176,0.3); }
   </style>
 </head>
 <body>
@@ -278,6 +344,30 @@
           </div>
         </div>
 
+
+        <!-- LANDING PAGE -->
+        <div class="plan-card reveal">
+          <p class="plan-name">Landing Page</p>
+          <p class="plan-desc">Página única completa para divulgar seu negócio, serviço ou produto. Focada em conversão e resultado.</p>
+          <div class="plan-price">
+            <span class="from">A partir de</span>
+            <span class="amount"><span class="currency">R$</span>250</span>
+          </div>
+          <p class="plan-note">*verificar domínios gratuitos disponíveis</p>
+          <ul class="plan-features">
+            <li><strong>1 página</strong> completa</li>
+            <li>Seções: hero, sobre, serviços e contato</li>
+            <li>Formulário de contato</li>
+            <li>100% responsivo</li>
+            <li><strong>1 ano de domínio grátis*</strong></li>
+            <li>Entrega em até 7 dias</li>
+          </ul>
+          <div class="plan-cta">
+            <a href="https://wa.me/5521970913261?text=Ol%C3%A1%20Jo%C3%A3o%2C%20tenho%20interesse%20no%20plano%20Landing%20Page" target="_blank" class="btn-plan btn-plan-fill">WhatsApp →</a>
+            <a href="https://instagram.com/dev.dahan" target="_blank" class="btn-plan btn-plan-outline">Instagram</a>
+          </div>
+        </div>
+
         <!-- SITE COMPLETO -->
         <div class="plan-card featured reveal">
           <span class="plan-badge">Mais completo</span>
@@ -330,6 +420,64 @@
 
       <div class="disclaimer reveal">
         <span>*</span> Domínio gratuito por 1 ano sujeito a disponibilidade. Domínios <strong>.com.br</strong>, <strong>.site</strong>, <strong>.online</strong> e outros — verificar opções disponíveis no momento da contratação. Após o primeiro ano, renovação por conta do cliente.
+      </div>
+    </div>
+  </section>
+
+
+  <div class="hr"></div>
+
+  <!-- COMBO -->
+  <section id="combo">
+    <div class="section-wrap">
+      <p class="eyebrow">Combos</p>
+      <h2 class="page-title" style="font-size:clamp(2rem,4vw,3rem);margin-bottom:0.75rem;">Monte seu combo</h2>
+      <p style="color:var(--muted);font-size:0.95rem;margin-bottom:2.5rem;font-weight:300;max-width:480px;line-height:1.7;">Una dois produtos e economize. Ideal para quem quer presença digital completa.</p>
+      <div class="combo-grid">
+
+        <div class="combo-card reveal">
+          <span class="combo-tag">Combo 01</span>
+          <p class="combo-title">Link in Bio + Site Completo</p>
+          <div class="combo-items">
+            <span class="combo-item-tag">Link in Bio</span>
+            <span class="combo-item-tag">Site Completo</span>
+            <span class="combo-item-tag">2 domínios grátis*</span>
+          </div>
+          <div>
+            <div class="combo-price-row">
+              <span class="combo-from">a partir de</span>
+              <span class="combo-price"><span class="combo-currency">R$</span>450</span>
+            </div>
+            <p class="combo-note">*verificar domínios gratuitos disponíveis</p>
+          </div>
+          <a href="https://wa.me/5521970913261?text=Ol%C3%A1%20Jo%C3%A3o%2C%20tenho%20interesse%20no%20Combo%20Link%20in%20Bio%20%2B%20Site%20Completo" target="_blank" class="combo-btn">WhatsApp →</a>
+        </div>
+
+        <div class="combo-card reveal">
+          <span class="combo-tag">Combo 02</span>
+          <p class="combo-title">Link in Bio + Landing Page</p>
+          <div class="combo-items">
+            <span class="combo-item-tag">Link in Bio</span>
+            <span class="combo-item-tag">Landing Page</span>
+            <span class="combo-item-tag">2 domínios grátis*</span>
+          </div>
+          <div>
+            <div class="combo-price-row">
+              <span class="combo-from">a partir de</span>
+              <span class="combo-price"><span class="combo-currency">R$</span>450</span>
+            </div>
+            <p class="combo-note">*verificar domínios gratuitos disponíveis</p>
+          </div>
+          <a href="https://wa.me/5521970913261?text=Ol%C3%A1%20Jo%C3%A3o%2C%20tenho%20interesse%20no%20Combo%20Link%20in%20Bio%20%2B%20Landing%20Page" target="_blank" class="combo-btn">WhatsApp →</a>
+        </div>
+
+        <div class="combo-card reveal" style="border-style: dashed; opacity: 0.6;">
+          <span class="combo-tag">Combo personalizado</span>
+          <p class="combo-title">Tem outra ideia?</p>
+          <p style="font-size:0.85rem;color:var(--muted);line-height:1.6;">Me manda uma mensagem com o que você precisa e a gente monta um pacote sob medida.</p>
+          <a href="https://wa.me/5521970913261?text=Ol%C3%A1%20Jo%C3%A3o%2C%20quero%20montar%20um%20combo%20personalizado" target="_blank" class="combo-btn" style="background:transparent;border:1px solid var(--border);color:var(--text);" onmouseover="this.style.background='var(--accent)';this.style.color='var(--bg)'" onmouseout="this.style.background='transparent';this.style.color='var(--text)'">Falar no WhatsApp →</a>
+        </div>
+
       </div>
     </div>
   </section>
