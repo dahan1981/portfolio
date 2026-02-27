@@ -155,8 +155,8 @@
 
       <div class="facts-row">
         <div class="fact-item reveal">
-          <div class="fact-num">30 dias</div>
-          <div class="fact-label">Tempo de espera médio</div>
+          <div class="fact-num">21</div>
+          <div class="fact-label">Anos de idade</div>
         </div>
         <div class="fact-item reveal">
           <div class="fact-num">7+</div>
@@ -257,11 +257,17 @@
   hb.addEventListener('click', () => nl.classList.toggle('open'));
   nl.querySelectorAll('a').forEach(a => a.addEventListener('click', () => nl.classList.remove('open')));
 
+  // Add js-loaded so reveal animations only run when JS is active
+  document.body.classList.add('js-loaded');
+
+  // Add js-loaded so reveal animations only run when JS is active
+  document.body.classList.add('js-loaded');
+
   const obs = new IntersectionObserver((entries) => {
     entries.forEach((e, i) => {
       if (e.isIntersecting) setTimeout(() => e.target.classList.add('visible'), i * 80);
     });
-  }, { threshold: 0.08 });
+  }, { threshold: 0.05 });
   document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
 </script>
 </body>
