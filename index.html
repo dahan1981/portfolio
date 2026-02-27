@@ -8,7 +8,6 @@
   <link rel="icon" type="image/x-icon" href="favicon.ico" />
   <link rel="stylesheet" href="style.css" />
   <style>
-    /* ── HERO ── */
     #hero {
       min-height: 100vh;
       display: flex; align-items: center;
@@ -18,94 +17,102 @@
     .hero-inner { max-width: 1000px; margin: 0 auto; width: 100%; }
 
     .hero-eyebrow {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono', 'Courier New', monospace;
       font-size: 0.75rem; color: var(--accent);
       letter-spacing: 3px; text-transform: uppercase;
       margin-bottom: 2rem;
       opacity: 0; animation: fadeUp 0.7s ease forwards 0.1s;
     }
-
     .hero-title {
-      font-family: 'Syne', sans-serif;
+      font-family: 'Syne', 'Arial Black', sans-serif;
       font-size: clamp(3.5rem, 10vw, 8rem);
       font-weight: 800; color: var(--white);
       line-height: 1; letter-spacing: -2px;
       margin-bottom: 2rem;
       opacity: 0; animation: fadeUp 0.7s ease forwards 0.25s;
     }
-    .hero-title .name-line { display: block; }
     .hero-title .role-line {
       display: block; color: transparent;
       -webkit-text-stroke: 1px rgba(255,255,255,0.18);
     }
-
     .hero-desc {
       font-size: 1.05rem; color: var(--muted);
       max-width: 460px; line-height: 1.75;
       margin-bottom: 3rem; font-weight: 300;
       opacity: 0; animation: fadeUp 0.7s ease forwards 0.4s;
     }
-
     .hero-actions {
       display: flex; gap: 1rem; flex-wrap: wrap;
       opacity: 0; animation: fadeUp 0.7s ease forwards 0.55s;
     }
 
-    /* ── SKILLS (home) ── */
+    /* SKILLS */
     #skills { background: var(--bg2); }
 
-    .skills-list {
+    .skills-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-      gap: 1px;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 0.75rem;
+    }
+    .skill-card {
+      background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 8px;
-      overflow: hidden;
+      padding: 1.5rem 1.25rem;
+      transition: border-color 0.2s, background 0.2s;
     }
-    .skill-item {
-      padding: 1.75rem 1.5rem;
-      background: var(--surface);
-      display: flex; flex-direction: column; gap: 0.6rem;
-      transition: background 0.2s;
-      cursor: default;
+    .skill-card:hover {
+      border-color: rgba(155,51,176,0.4);
+      background: rgba(71,23,84,0.2);
     }
-    .skill-item:hover { background: rgba(71,23,84,0.25); }
-    .skill-item .s-name {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.82rem; color: var(--text); font-weight: 500;
+    .skill-name {
+      font-family: 'JetBrains Mono', 'Courier New', monospace;
+      font-size: 0.85rem; color: var(--text);
+      font-weight: 500; display: block;
+      margin-bottom: 0.75rem;
     }
-    .skill-item .s-level { height: 2px; background: var(--border); border-radius: 2px; overflow: hidden; }
-    .skill-item .s-level-fill {
+    .skill-bar { height: 2px; background: var(--border); border-radius: 2px; }
+    .skill-bar-fill {
       height: 100%; background: var(--accent); border-radius: 2px;
-      width: 0; transition: width 1.2s ease;
     }
-    .skill-item.visible .s-level-fill { width: var(--level); }
 
-    /* ── WORK TEASER ── */
-    .work-teaser-grid {
+    /* WORK TEASER */
+    .work-grid {
       display: grid; grid-template-columns: 1fr 1fr;
-      gap: 1px; border: 1px solid var(--border);
-      border-radius: 8px; overflow: hidden;
+      gap: 0.75rem;
     }
-    .work-teaser-item {
-      background: var(--surface); padding: 2.5rem;
+    .work-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 2.5rem;
       display: flex; flex-direction: column; justify-content: space-between;
-      min-height: 220px; transition: background 0.25s;
-      text-decoration: none; position: relative; overflow: hidden;
+      min-height: 200px;
+      text-decoration: none;
+      transition: border-color 0.25s, background 0.25s;
     }
-    .work-teaser-item::before {
-      content: ''; position: absolute; inset: 0;
-      background: linear-gradient(135deg, rgba(71,23,84,0.2), transparent);
-      opacity: 0; transition: opacity 0.3s;
+    .work-card:hover {
+      border-color: rgba(155,51,176,0.4);
+      background: rgba(71,23,84,0.15);
     }
-    .work-teaser-item:hover::before { opacity: 1; }
-    .work-teaser-item:hover { background: #130c1c; }
-
-    .wt-num { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--muted); letter-spacing: 2px; }
-    .wt-title { font-family: 'Syne', sans-serif; font-size: 1.4rem; font-weight: 700; color: var(--white); letter-spacing: -0.5px; margin: 0.75rem 0 0.4rem; }
+    .wt-num {
+      font-family: 'JetBrains Mono', 'Courier New', monospace;
+      font-size: 0.7rem; color: var(--muted); letter-spacing: 2px;
+      display: block; margin-bottom: 1.25rem;
+    }
+    .wt-title {
+      font-family: 'Syne', 'Arial Black', sans-serif;
+      font-size: 1.3rem; font-weight: 700;
+      color: var(--white); letter-spacing: -0.5px;
+      margin-bottom: 0.4rem;
+    }
     .wt-desc { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
-    .wt-arrow { align-self: flex-end; font-size: 1.2rem; color: var(--accent); transition: transform 0.2s; }
-    .work-teaser-item:hover .wt-arrow { transform: translate(4px, -4px); }
+    .wt-arrow {
+      display: block; margin-top: 1.5rem;
+      font-size: 1.1rem; color: var(--accent);
+      transition: transform 0.2s;
+    }
+    .work-card:hover .wt-arrow { transform: translate(4px, -4px); }
 
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(25px); }
@@ -114,7 +121,8 @@
 
     @media (max-width: 640px) {
       #hero { padding: 7rem 1.5rem 3rem; }
-      .work-teaser-grid { grid-template-columns: 1fr; }
+      .work-grid { grid-template-columns: 1fr; }
+      .skills-grid { grid-template-columns: repeat(2, 1fr); }
     }
   </style>
 </head>
@@ -136,11 +144,12 @@
 
 <div class="page">
 
+  <!-- HERO -->
   <section id="hero">
     <div class="hero-inner">
       <p class="hero-eyebrow">Full-stack Web Developer</p>
       <h1 class="hero-title">
-        <span class="name-line">João Dahan</span>
+        João Dahan<br>
         <span class="role-line">Builder.</span>
       </h1>
       <p class="hero-desc">
@@ -155,46 +164,66 @@
 
   <div class="hr"></div>
 
+  <!-- SKILLS -->
   <section id="skills">
     <div class="section-wrap">
       <p class="eyebrow">Stack</p>
       <h2 class="page-title" style="font-size:clamp(2rem,4vw,3rem);margin-bottom:2.5rem;">Tecnologias</h2>
-      <div class="skills-list">
-        <div class="skill-item reveal" style="--level:90%"><span class="s-name">JavaScript</span><div class="s-level"><div class="s-level-fill"></div></div></div>
-        <div class="skill-item reveal" style="--level:82%"><span class="s-name">React</span><div class="s-level"><div class="s-level-fill"></div></div></div>
-        <div class="skill-item reveal" style="--level:85%"><span class="s-name">Node.js</span><div class="s-level"><div class="s-level-fill"></div></div></div>
-        <div class="skill-item reveal" style="--level:75%"><span class="s-name">Python</span><div class="s-level"><div class="s-level-fill"></div></div></div>
-        <div class="skill-item reveal" style="--level:80%"><span class="s-name">SQL</span><div class="s-level"><div class="s-level-fill"></div></div></div>
-        <div class="skill-item reveal" style="--level:92%"><span class="s-name">HTML / CSS</span><div class="s-level"><div class="s-level-fill"></div></div></div>
+      <div class="skills-grid">
+        <div class="skill-card">
+          <span class="skill-name">JavaScript</span>
+          <div class="skill-bar"><div class="skill-bar-fill" style="width:90%"></div></div>
+        </div>
+        <div class="skill-card">
+          <span class="skill-name">React</span>
+          <div class="skill-bar"><div class="skill-bar-fill" style="width:82%"></div></div>
+        </div>
+        <div class="skill-card">
+          <span class="skill-name">Node.js</span>
+          <div class="skill-bar"><div class="skill-bar-fill" style="width:85%"></div></div>
+        </div>
+        <div class="skill-card">
+          <span class="skill-name">Python</span>
+          <div class="skill-bar"><div class="skill-bar-fill" style="width:75%"></div></div>
+        </div>
+        <div class="skill-card">
+          <span class="skill-name">SQL</span>
+          <div class="skill-bar"><div class="skill-bar-fill" style="width:80%"></div></div>
+        </div>
+        <div class="skill-card">
+          <span class="skill-name">HTML / CSS</span>
+          <div class="skill-bar"><div class="skill-bar-fill" style="width:92%"></div></div>
+        </div>
       </div>
     </div>
   </section>
 
   <div class="hr"></div>
 
-  <section id="work-teaser">
+  <!-- TRABALHOS -->
+  <section>
     <div class="section-wrap">
       <p class="eyebrow">Trabalhos</p>
       <h2 class="page-title" style="font-size:clamp(2rem,4vw,3rem);margin-bottom:2.5rem;">Seleção</h2>
-      <div class="work-teaser-grid">
-        <a href="projetos.html" class="work-teaser-item reveal">
-          <p class="wt-num">01 — Landing Page</p>
+      <div class="work-grid">
+        <a href="projetos.html" class="work-card">
           <div>
+            <span class="wt-num">01 — Landing Page</span>
             <p class="wt-title">Coleção Link in Bio</p>
             <p class="wt-desc">6 variações de página. HTML, CSS, JS puro.</p>
           </div>
           <span class="wt-arrow">↗</span>
         </a>
-        <a href="projetos.html" class="work-teaser-item reveal">
-          <p class="wt-num">02 — Site Institucional</p>
+        <a href="projetos.html" class="work-card">
           <div>
+            <span class="wt-num">02 — Site Institucional</span>
             <p class="wt-title">CEMU</p>
             <p class="wt-desc">Site escolar completo com matrícula online.</p>
           </div>
           <span class="wt-arrow">↗</span>
         </a>
       </div>
-      <div style="margin-top:2rem;">
+      <div style="margin-top:1.5rem;">
         <a href="projetos.html" class="btn btn-outline">Todos os projetos →</a>
       </div>
     </div>
@@ -202,16 +231,17 @@
 
   <div class="hr"></div>
 
+  <!-- CONTATO -->
   <section id="contato">
     <div class="section-wrap">
       <p class="eyebrow">Contato</p>
       <h2 class="page-title" style="font-size:clamp(2rem,4vw,3rem);margin-bottom:1rem;">Tem um projeto?</h2>
-      <p class="reveal" style="color:var(--muted);max-width:400px;margin-bottom:2.5rem;font-weight:300;line-height:1.75;">
-        Me manda uma mensagem. Nós faremos sua ideia virar realidade.
+      <p style="color:var(--muted);max-width:400px;margin-bottom:2.5rem;font-weight:300;line-height:1.75;">
+        Me manda uma mensagem. Respondo rápido.
       </p>
-      <div class="reveal" style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:2rem;">
+      <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:2rem;">
         <a href="https://wa.me/5521970913261" target="_blank" class="btn btn-fill">WhatsApp →</a>
-        <a href="/cdn-cgi/l/email-protection#f69387839f86939c99979992979e9798b6919b979f9ad895999b" class="btn btn-outline">Email</a>
+        <a href="mailto:equipejoaodahan@gmail.com?subject=Contato%20-%20Guia%20Destrave&body=Oi!%20Vim%20atrav%C3%A9s%20do%20Guia%20Destrave%20e%20gostaria%20de%20falar%20com%20voc%C3%AA.%0A%0A%28escreva%20sua%20mensagem%20aqui%29%0A%0AObrigado!" class="btn btn-outline">Email</a>
       </div>
       <div style="display:flex;gap:2rem;flex-wrap:wrap;">
         <a href="https://instagram.com/dev.dahan" target="_blank" style="color:var(--muted);font-size:0.82rem;text-decoration:none;letter-spacing:1px;text-transform:uppercase;transition:color 0.2s;" onmouseover="this.style.color='var(--white)'" onmouseout="this.style.color='var(--muted)'">Instagram ↗</a>
@@ -231,12 +261,7 @@
   </div>
 </footer>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
   const hb = document.getElementById('hamburger');
   const nl = document.getElementById('navLinks');
-  hb.addEventListener('click', () => nl.classList.toggle('open'));
-  nl.querySelectorAll('a').forEach(a => a.addEventListener('click', () => nl.classList.remove('open')));
-
-  const obs = new IntersectionObserver((entries) => {
-    entries.forEach((e, i) => {
-      if (e.isIntersecting) setTimeout(() => e.target.classList.a
+  hb.addEventListener('click', () => nl.cl
