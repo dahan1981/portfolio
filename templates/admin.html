@@ -6,8 +6,10 @@
   <title>Painel Admin — João Dahan</title>
   <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}" />
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+
   <style>
     body { padding-top: 0; }
+
     .admin-nav {
       position: sticky; top: 0; z-index: 100;
       background: rgba(7,6,10,0.95);
@@ -23,46 +25,62 @@
       text-transform: uppercase;
     }
     .admin-nav-logo span { color: var(--accent); }
+
     .admin-wrap { max-width: 1100px; margin: 0 auto; padding: 2rem; }
 
     .stats-row {
-      display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-      gap: 1rem; margin-bottom: 3rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-bottom: 3rem;
     }
     .stat-box {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 8px; padding: 1.5rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
     }
     .stat-box .num {
       font-family: 'Syne', 'Arial Black', sans-serif;
       font-size: 2.2rem; font-weight: 800;
-      color: var(--accent); letter-spacing: -1px;
+      color: var(--accent);
+      letter-spacing: -1px;
+      line-height: 1;
     }
     .stat-box .lbl { font-size: 0.8rem; color: var(--muted); margin-top: 0.25rem; }
 
     .section-title {
       font-family: 'Syne', 'Arial Black', sans-serif;
       font-size: 1.3rem; font-weight: 700;
-      color: var(--white); margin-bottom: 1rem;
+      color: var(--white);
+      margin-bottom: 1rem;
       letter-spacing: -0.5px;
     }
 
     .admin-table {
-      width: 100%; border-collapse: collapse;
-      border: 1px solid var(--border); border-radius: 8px;
-      overflow: hidden; margin-bottom: 3rem;
+      width: 100%;
+      border-collapse: collapse;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 3rem;
     }
     .admin-table th {
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.65rem; color: var(--muted);
       letter-spacing: 2px; text-transform: uppercase;
-      padding: 0.85rem 1rem; text-align: left;
-      background: var(--surface); border-bottom: 1px solid var(--border);
+      padding: 0.85rem 1rem;
+      text-align: left;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
       white-space: nowrap;
     }
     .admin-table td {
-      padding: 0.85rem 1rem; font-size: 0.85rem; color: var(--text);
-      border-bottom: 1px solid var(--border); background: var(--bg2);
+      padding: 0.85rem 1rem;
+      font-size: 0.85rem;
+      color: var(--text);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg2);
       vertical-align: middle;
     }
     .admin-table tr:last-child td { border-bottom: none; }
@@ -73,157 +91,220 @@
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.62rem; letter-spacing: 1px;
       text-transform: uppercase;
-      padding: 2px 8px; border-radius: 50px;
+      padding: 2px 8px;
+      border-radius: 50px;
+      border: 1px solid transparent;
+      white-space: nowrap;
     }
-    .status-pendente { background: rgba(255,180,0,0.12); color: #ffb400; border: 1px solid rgba(255,180,0,0.3); }
-    .status-aprovado { background: rgba(0,196,140,0.12); color: #00c48c; border: 1px solid rgba(0,196,140,0.3); }
-    .status-aguardando_pagamento { background: rgba(155,51,176,0.15); color: #b03ec8; border: 1px solid rgba(155,51,176,0.3); }
-    .status-pago { background: rgba(0,196,140,0.2); color: #00c48c; border: 1px solid rgba(0,196,140,0.4); }
-    .status-cancelado { background: rgba(220,50,50,0.12); color: #ff6b6b; border: 1px solid rgba(220,50,50,0.3); }
+    .status-pendente { background: rgba(255,180,0,0.12); color: #ffb400; border-color: rgba(255,180,0,0.3); }
+    .status-aprovado { background: rgba(0,196,140,0.12); color: #00c48c; border-color: rgba(0,196,140,0.3); }
+    .status-aguardando_pagamento { background: rgba(155,51,176,0.15); color: #b03ec8; border-color: rgba(155,51,176,0.3); }
+    .status-pago { background: rgba(0,196,140,0.2); color: #00c48c; border-color: rgba(0,196,140,0.4); }
+    .status-cancelado { background: rgba(220,50,50,0.12); color: #ff6b6b; border-color: rgba(220,50,50,0.3); }
 
-    .action-form { display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap; }
+    .action-form {
+      display: flex;
+      gap: 0.4rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
     .action-form input[type="text"] {
-      background: var(--bg); border: 1px solid var(--border);
-      border-radius: 4px; padding: 0.35rem 0.6rem;
-      color: var(--text); font-size: 0.8rem; width: 80px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.35rem 0.6rem;
+      color: var(--text);
+      font-size: 0.8rem;
+      width: 90px;
       outline: none;
     }
     .action-form select {
-      background: var(--bg); border: 1px solid var(--border);
-      border-radius: 4px; padding: 0.35rem 0.6rem;
-      color: var(--text); font-size: 0.8rem; outline: none;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.35rem 0.6rem;
+      color: var(--text);
+      font-size: 0.8rem;
+      outline: none;
     }
     .action-form button {
-      background: var(--accent); color: var(--bg);
-      border: none; border-radius: 4px;
-      padding: 0.35rem 0.75rem; font-size: 0.78rem;
-      font-weight: 600; cursor: pointer;
+      background: var(--accent);
+      color: var(--bg);
+      border: none;
+      border-radius: 4px;
+      padding: 0.35rem 0.75rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
       transition: background 0.2s;
+      white-space: nowrap;
     }
     .action-form button:hover { background: #b03ec8; }
+
+    .muted-link { color: var(--muted); font-size: 0.82rem; text-decoration: none; }
+    .accent-link { color: var(--accent); text-decoration: none; }
+    .cell-ellipsis {
+      max-width: 160px;
+      color: var(--muted);
+      font-size: 0.8rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .flash {
+      padding: 0.75rem 1rem;
+      border-radius: 6px;
+      margin-bottom: 1rem;
+      font-size: 0.85rem;
+      background: rgba(0,196,140,0.1);
+      border: 1px solid rgba(0,196,140,0.3);
+      color: #00c48c;
+    }
   </style>
 </head>
+
 <body>
-<div class="ambient amb-1"></div>
-<div class="ambient amb-2"></div>
+  <div class="ambient amb-1"></div>
+  <div class="ambient amb-2"></div>
 
-<nav class="admin-nav">
-  <span class="admin-nav-logo">Admin<span>.</span></span>
-  <div style="display:flex;gap:1rem;align-items:center;">
-    <a href="{{ url_for('index') }}" style="color:var(--muted);font-size:0.82rem;text-decoration:none;">Ver site ↗</a>
-    <a href="{{ url_for('admin_logout') }}" style="color:var(--muted);font-size:0.82rem;text-decoration:none;">Sair</a>
-  </div>
-</nav>
+  <nav class="admin-nav">
+    <span class="admin-nav-logo">Admin<span>.</span></span>
+    <div style="display:flex;gap:1rem;align-items:center;">
+      <a href="{{ url_for('index') }}" class="muted-link">Ver site ↗</a>
+      <a href="{{ url_for('admin_logout') }}" class="muted-link">Sair</a>
+    </div>
+  </nav>
 
-<div class="admin-wrap">
+  <div class="admin-wrap">
 
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      {% for category, message in messages %}
-        <div style="padding:0.75rem 1rem;border-radius:6px;margin-bottom:1rem;font-size:0.85rem;background:rgba(0,196,140,0.1);border:1px solid rgba(0,196,140,0.3);color:#00c48c;">{{ message }}</div>
-      {% endfor %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <!-- STATS -->
+    <div class="stats-row">
+      <div class="stat-box">
+        <div class="num">{{ orcamentos|length }}</div>
+        <div class="lbl">Total de orçamentos</div>
+      </div>
+      <div class="stat-box">
+        <div class="num">{{ total_pendente }}</div>
+        <div class="lbl">Pendentes</div>
+      </div>
+      <div class="stat-box">
+        <div class="num">{{ total_pago }}</div>
+        <div class="lbl">Pagos</div>
+      </div>
+      <div class="stat-box">
+        <div class="num">{{ clientes|length }}</div>
+        <div class="lbl">Clientes cadastrados</div>
+      </div>
+    </div>
+
+    <!-- ORÇAMENTOS -->
+    <p class="section-title">Orçamentos</p>
+
+    {% if orcamentos %}
+      <div style="overflow-x:auto;">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Nome</th>
+              <th>Email</th>
+              <th>Telefone</th>
+              <th>Serviço</th>
+              <th>Mensagem</th>
+              <th>Data</th>
+              <th>Status</th>
+              <th>Valor (R$)</th>
+              <th>Ação</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for orc in orcamentos %}
+              <tr>
+                <td style="color:var(--muted);">{{ orc.id }}</td>
+                <td><strong>{{ orc.nome }}</strong></td>
+                <td>
+                  <a class="accent-link" href="mailto:{{ orc.email }}">{{ orc.email }}</a>
+                </td>
+                <td>{{ orc.telefone or '—' }}</td>
+                <td>{{ orc.tipo_servico }}</td>
+                <td class="cell-ellipsis" title="{{ orc.mensagem or '' }}">{{ orc.mensagem or '—' }}</td>
+                <td style="white-space:nowrap;">
+                  {{ orc.criado_em.strftime('%d/%m/%y %H:%M') if orc.criado_em else '—' }}
+                </td>
+                <td>
+                  <span class="status-badge status-{{ orc.status }}">{{ (orc.status or '').replace('_',' ') }}</span>
+                </td>
+                <td>
+                  {% if orc.valor %}
+                    R$ {{ '%.2f'|format(orc.valor) }}
+                  {% else %}
+                    —
+                  {% endif %}
+                </td>
+                <td>
+                  <form method="POST" action="{{ url_for('admin_atualizar_status', id=orc.id) }}" class="action-form">
+                    <input type="text" name="valor" placeholder="Valor" value="{{ orc.valor or '' }}" />
+                    <select name="status">
+                      <option value="pendente" {% if orc.status == 'pendente' %}selected{% endif %}>Pendente</option>
+                      <option value="aprovado" {% if orc.status == 'aprovado' %}selected{% endif %}>Aprovado</option>
+                      <option value="aguardando_pagamento" {% if orc.status == 'aguardando_pagamento' %}selected{% endif %}>Aguard. pgto</option>
+                      <option value="pago" {% if orc.status == 'pago' %}selected{% endif %}>Pago</option>
+                      <option value="cancelado" {% if orc.status == 'cancelado' %}selected{% endif %}>Cancelado</option>
+                    </select>
+                    <button type="submit">Salvar</button>
+                  </form>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p style="color:var(--muted);margin-bottom:3rem;">Nenhum orçamento ainda.</p>
     {% endif %}
-  {% endwith %}
 
-  <!-- STATS -->
-  <div class="stats-row">
-    <div class="stat-box">
-      <div class="num">{{ orcamentos|length }}</div>
-      <div class="lbl">Total de orçamentos</div>
-    </div>
-    <div class="stat-box">
-      <div class="num">{{ total_pendente }}</div>
-      <div class="lbl">Pendentes</div>
-    </div>
-    <div class="stat-box">
-      <div class="num">{{ total_pago }}</div>
-      <div class="lbl">Pagos</div>
-    </div>
-    <div class="stat-box">
-      <div class="num">{{ clientes|length }}</div>
-      <div class="lbl">Clientes cadastrados</div>
-    </div>
-  </div>
+    <!-- CLIENTES -->
+    <p class="section-title">Clientes cadastrados</p>
 
-  <!-- ORÇAMENTOS -->
-  <p class="section-title">Orçamentos</p>
-  {% if orcamentos %}
-  <div style="overflow-x:auto;">
-    <table class="admin-table">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Nome</th>
-          <th>Email</th>
-          <th>Telefone</th>
-          <th>Serviço</th>
-          <th>Mensagem</th>
-          <th>Data</th>
-          <th>Status</th>
-          <th>Valor (R$)</th>
-          <th>Ação</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for orc in orcamentos %}
-        <tr>
-          <td style="color:var(--muted);">{{ orc.id }}</td>
-          <td><strong>{{ orc.nome }}</strong></td>
-          <td><a href="/cdn-cgi/l/email-protection#403b3b602f32236e252d21292c603d3d" style="color:var(--accent);text-decoration:none;">{{ orc.email }}</a></td>
-          <td>{{ orc.telefone or '—' }}</td>
-          <td>{{ orc.tipo_servico }}</td>
-          <td style="max-width:160px;color:var(--muted);font-size:0.8rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="{{ orc.mensagem }}">{{ orc.mensagem or '—' }}</td>
-          <td style="white-space:nowrap;">{{ orc.criado_em.strftime('%d/%m/%y %H:%M') }}</td>
-          <td><span class="status-badge status-{{ orc.status }}">{{ orc.status.replace('_',' ') }}</span></td>
-          <td>{% if orc.valor %}R$ {{ '%.2f'|format(orc.valor) }}{% else %}—{% endif %}</td>
-          <td>
-            <form method="POST" action="{{ url_for('admin_atualizar_status', id=orc.id) }}" class="action-form">
-              <input type="text" name="valor" placeholder="Valor" value="{{ orc.valor or '' }}" />
-              <select name="status">
-                <option value="pendente" {% if orc.status == 'pendente' %}selected{% endif %}>Pendente</option>
-                <option value="aprovado" {% if orc.status == 'aprovado' %}selected{% endif %}>Aprovado</option>
-                <option value="aguardando_pagamento" {% if orc.status == 'aguardando_pagamento' %}selected{% endif %}>Aguard. pgto</option>
-                <option value="pago" {% if orc.status == 'pago' %}selected{% endif %}>Pago</option>
-                <option value="cancelado" {% if orc.status == 'cancelado' %}selected{% endif %}>Cancelado</option>
-              </select>
-              <button type="submit">Salvar</button>
-            </form>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-  {% else %}
-    <p style="color:var(--muted);margin-bottom:3rem;">Nenhum orçamento ainda.</p>
-  {% endif %}
+    {% if clientes %}
+      <div style="overflow-x:auto;">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Nome</th>
+              <th>Email</th>
+              <th>Cadastrado em</th>
+              <th>Orçamentos</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for c in clientes %}
+              <tr>
+                <td style="color:var(--muted);">{{ c.id }}</td>
+                <td>{{ c.nome }}</td>
+                <td>
+                  <a class="accent-link" href="mailto:{{ c.email }}">{{ c.email }}</a>
+                </td>
+                <td>{{ c.criado_em.strftime('%d/%m/%Y') if c.criado_em else '—' }}</td>
+                <td>{{ c.orcamentos|length }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p style="color:var(--muted);">Nenhum cliente cadastrado ainda.</p>
+    {% endif %}
 
-  <!-- CLIENTES -->
-  <p class="section-title">Clientes cadastrados</p>
-  {% if clientes %}
-  <div style="overflow-x:auto;">
-    <table class="admin-table">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Nome</th>
-          <th>Email</th>
-          <th>Cadastrado em</th>
-          <th>Orçamentos</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for c in clientes %}
-        <tr>
-          <td style="color:var(--muted);">{{ c.id }}</td>
-          <td>{{ c.nome }}</td>
-          <td><a href="/cdn-cgi/l/email-protection#770c0c571459121a161e1b570a0a" style="color:var(--accent);text-decoration:none;">{{ c.email }}</a></td>
-          <td>{{ c.criado_em.strftime('%d/%m/%Y') }}</td>
-          <td>{{ c.orcamentos|length }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
   </div>
-  {% else %}
-    <p style="color:var(--muted);">N
+</body>
+</html>
