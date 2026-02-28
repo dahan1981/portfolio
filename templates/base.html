@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}João Dahan — Web Developer{% endblock %}</title>
+  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+<div class="ambient amb-1"></div>
+<div class="ambient amb-2"></div>
+
+<nav>
+  <a href="{{ url_for('index') }}" class="nav-logo">JD<span>.</span></a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="{{ url_for('index') }}" {% if request.endpoint == 'index' %}class="active"{% endif %}>Home</a></li>
+    <li><a href="{{ url_for('sobre') }}" {% if request.endpoint == 'sobre' %}class="active"{% endif %}>Sobre</a></li>
+    <li><a href="{{ url_for('projetos') }}" {% if request.endpoint == 'projetos' %}class="active"{% endif %}>Projetos</a></li>
+    <li><a href="{{ url_for('galeria') }}" {% if request.endpoint == 'galeria' %}class="active"{% endif %}>Galeria</a></li>
+    <li><a href="{{ url_for('orcamentos') }}" {% if request.endpoint == 'orcamentos' %}class="active"{% endif %}>Orçamentos</a></li>
+    {% if session.get('cliente_id') %}
+    <li><a href="{{ url_for('area_cliente') }}" {% if request.endpoint == 'area_cliente' %}class="active"{% endif %}>Minha Área</a></li>
+    <li><a href="{{ url_for('logout') }}">Sair</a></li>
+    {% else %}
+    <li><a href="{{ url_for('login') }}" {% if request.endpoint == 'login' %}class="active"{% endif %}>Login</a></li>
+    {% endif %}
+  </ul>
+  <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+</nav>
+
+<!-- Flash messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div style="position:fixed;top:80px;right:1.5rem;z-index:200;display:flex;flex-direction:column;gap:0.5rem;">
+      {% for category, message in messages %}
+        <div style="
+          padding: 0.85rem 1.5rem;
+          border-radius: 6px;
+          font-size: 0.88rem;
+          font-family: 'Inter', sans-serif;
+          background: {% if category == 'sucesso' %}rgba(0,196,140,0.15){% else %}rgba(220,50,50,0.15){% endif %};
+          border: 1px solid {% if category == 'sucesso' %}rgba(0,196,140,0.4){% else %}rgba(220,50,50,0.4){% endif %};
+          color: {% if category == 'sucesso' %}#00c48c{% else %}#ff6b6b{% endif %};
+          max-width: 320px;
+        ">{{ message }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+<div class="page">
+  {% block content %}{% endblock %}
+</div>
+
+<footer>
+  <a href="{{ url_for('index') }}" class="footer-logo">JD<span>.</span></a>
+  <div class="footer-right">
+    <a href="{{ url_for('projetos') }}">Projetos</a>
+    <a href="https://github.com/dahan1981" target="_blank">GitHub</a>
+    <a href="https://wa.me/5521970913261" target="_blank">WhatsApp</a>
+  </div>
+</footer>
+
+<script>
+  const hb = document.getElementById('hamburger');
+  const nl = document.getElementById('navLinks');
+  hb.addEventListener('click', () => nl.classList.toggle('open'));
+  nl.querySelectorAll('a').forEach(a => a.addEventListener('click', () => nl.classList.remove('open')));
+</script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

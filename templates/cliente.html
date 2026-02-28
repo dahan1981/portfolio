@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% block title %}Minha Área — João Dahan{% endblock %}
+
+{% block extra_css %}
+<style>
+  .cliente-hero {
+    padding: 9rem 3rem 3rem;
+    position: relative; z-index: 1;
+    max-width: 1000px; margin: 0 auto;
+  }
+  .cliente-greeting {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem; color: var(--accent);
+    letter-spacing: 3px; text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+  .cliente-title {
+    font-family: 'Syne', 'Arial Black', sans-serif;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 800; color: var(--white);
+    letter-spacing: -1px; margin-bottom: 2.5rem;
+  }
+
+  .status-badge {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem; letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 3px 10px; border-radius: 50px;
+  }
+  .status-pendente { background: rgba(255,180,0,0.12); color: #ffb400; border: 1px solid rgba(255,180,0,0.3); }
+  .status-aprovado { background: rgba(0,196,140,0.12); color: #00c48c; border: 1px solid rgba(0,196,140,0.3); }
+  .status-aguardando_pagamento { background: rgba(155,51,176,0.15); color: #b03ec8; border: 1px solid rgba(155,51,176,0.3); }
+  .status-pago { background: rgba(0,196,140,0.2); color: #00c48c; border: 1px solid rgba(0,196,140,0.4); }
+  .status-cancelado { background: rgba(220,50,50,0.12); color: #ff6b6b; border: 1px solid rgba(220,50,50,0.3); }
+
+  .orc-table {
+    width: 100%; border-collapse: collapse;
+    border: 1px solid var(--border); border-radius: 8px;
+    overflow: hidden;
+  }
+  .orc-table th {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem; color: var(--muted);
+    letter-spacing: 2px; text-transform: uppercase;
+    padding: 1rem 1.25rem; text-align: left;
+    background: var(--surface); border-bottom: 1px solid var(--border);
+  }
+  .orc-table td {
+    padding: 1rem 1.25rem; font-size: 0.88rem; color: var(--text);
+    border-bottom: 1px solid var(--border); background: var(--bg2);
+  }
+  .orc-table tr:last-child td { border-bottom: none; }
+  .orc-table tr:hover td { background: rgba(71,23,84,0.1); }
+
+  .empty-state {
+    text-align: center; padding: 4rem 2rem;
+    border: 1px solid var(--border); border-radius: 8px;
+    background: var(--surface);
+  }
+  .empty-state p { color: var(--muted); margin-bottom: 1.5rem; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="cliente-hero">
+  <p class="cliente-greeting">Área do cliente</p>
+  <h1 class="cliente-title">Olá, {{ cliente.nome.split()[0] }}.</h1>
+
+  <div class="hr" style="margin-bottom: 2.5rem;"></div>
+
+  <p class="eyebrow" style="margin-bottom: 1.25rem;">Meus orçamentos</p>
+
+  {% if orcamentos %}
+    <div style="overflow-x: auto;">
+      <table class="orc-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Serviço</th>
+            <th>Data</th>
+            <th>Valor</th>
+            <th>Status</th>
+            <th>Pagamento</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for orc in orcamentos %}
+          <tr>
+            <td style="color: var(--muted);">{{ orc.id }}</td>
+            <td>{{ orc.tipo_servico }}</td>
+            <td>{{ orc.criado_em.strftime('%d/%m/%Y') }}</td>
+            <td>{% if orc.valor %}R$ {{ '%.2f'|format(orc.valor) }}{% else %}<span style="color:var(--muted)">—</span>{% endif %}</td>
+            <td><span class="status-badge status-{{ orc.status }}">{{ orc.status.replace('_', ' ') }}</span></td>
+            <td>
+              {% if orc.pagamento_url %}
+                <a href="{{ orc.pagamento_url }}" target="_blank" class="btn btn-fill" style="font-size:0.75rem;padding:0.4rem 1rem;">Pagar →</a>
+              {% else %}
+                <span style="color:var(--muted);font-size:0.82rem;">—</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <p>Você ainda não tem orçamentos. Solicite um agora!</p>
+      <a href="{{ url_for('orcamentos') }}" class="btn btn-fill">Ver planos →</a>
+    </div>
+  {% endif %}
+
+  <div style="margin-top: 3rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+    <a href="{{ url_for('orcamentos') }}" class="btn btn-outline">Solicitar novo orçamento</a>
+    <a href="{{ url_for('logout') }}" class="btn btn-outline" style="color: var(--muted);">Sair</a>
+  </div>
+</div>
+{% endblock %}

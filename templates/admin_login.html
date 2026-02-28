@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — João Dahan</title>
+  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  <style>
+    body { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+    .admin-box {
+      width: 100%; max-width: 380px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 2.5rem;
+      position: relative; z-index: 1;
+    }
+    .admin-box h1 {
+      font-family: 'Syne', 'Arial Black', sans-serif;
+      font-size: 1.8rem; font-weight: 800;
+      color: var(--white); margin-bottom: 0.25rem;
+    }
+    .admin-box p { color: var(--muted); font-size: 0.85rem; margin-bottom: 2rem; }
+    .form-group { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1rem; }
+    .form-group label { font-size: 0.75rem; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; font-family: 'JetBrains Mono', monospace; }
+    .form-group input {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 6px; padding: 0.85rem 1rem;
+      color: var(--text); font-size: 0.95rem; outline: none;
+      transition: border-color 0.2s;
+    }
+    .form-group input:focus { border-color: rgba(155,51,176,0.5); }
+    .admin-submit {
+      width: 100%; background: var(--accent); color: var(--bg);
+      border: none; border-radius: 6px;
+      padding: 0.9rem; font-weight: 700; font-size: 0.95rem;
+      cursor: pointer; font-family: 'Inter', sans-serif;
+      transition: background 0.2s;
+    }
+    .admin-submit:hover { background: #b03ec8; }
+  </style>
+</head>
+<body>
+<div class="ambient amb-1"></div>
+<div class="ambient amb-2"></div>
+
+<div class="admin-box">
+  <h1>Admin</h1>
+  <p>Acesso restrito.</p>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div style="color:#ff6b6b;font-size:0.85rem;margin-bottom:1rem;">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+  <form method="POST">
+    <div class="form-group">
+      <label>Senha</label>
+      <input type="password" name="senha" placeholder="••••••••" required autofocus />
+    </div>
+    <button type="submit" class="admin-submit">Entrar →</button>
+  </form>
+</div>
+</body>
+</html>

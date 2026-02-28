@@ -1,0 +1,235 @@
+{% extends "base.html" %}
+{% block title %}João Dahan — Web Developer{% endblock %}
+
+{% block extra_css %}
+<style>
+    #hero {
+      min-height: 100vh;
+      display: flex; align-items: center;
+      padding: 8rem 3rem 4rem;
+      position: relative; z-index: 1;
+    }
+    .hero-inner { max-width: 1000px; margin: 0 auto; width: 100%; }
+
+    .hero-eyebrow {
+      font-family: 'JetBrains Mono', 'Courier New', monospace;
+      font-size: 0.75rem; color: var(--accent);
+      letter-spacing: 3px; text-transform: uppercase;
+      margin-bottom: 2rem;
+      opacity: 0; animation: fadeUp 0.7s ease forwards 0.1s;
+    }
+    .hero-title {
+      font-family: 'Syne', 'Arial Black', sans-serif;
+      font-size: clamp(3.5rem, 10vw, 8rem);
+      font-weight: 800; color: var(--white);
+      line-height: 1; letter-spacing: -2px;
+      margin-bottom: 2rem;
+      opacity: 0; animation: fadeUp 0.7s ease forwards 0.25s;
+    }
+    .hero-title .role-line {
+      display: block; color: transparent;
+      -webkit-text-stroke: 1px rgba(255,255,255,0.18);
+    }
+    .hero-desc {
+      font-size: 1.05rem; color: var(--muted);
+      max-width: 460px; line-height: 1.75;
+      margin-bottom: 3rem; font-weight: 300;
+      opacity: 0; animation: fadeUp 0.7s ease forwards 0.4s;
+    }
+    .hero-actions {
+      display: flex; gap: 1rem; flex-wrap: wrap;
+      opacity: 0; animation: fadeUp 0.7s ease forwards 0.55s;
+    }
+
+    /* SKILLS */
+    #skills { background: var(--bg2); }
+
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 0.75rem;
+    }
+    .skill-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem 1.25rem;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .skill-card:hover {
+      border-color: rgba(155,51,176,0.4);
+      background: rgba(71,23,84,0.2);
+    }
+    .skill-name {
+      font-family: 'JetBrains Mono', 'Courier New', monospace;
+      font-size: 0.85rem; color: var(--text);
+      font-weight: 500; display: block;
+      margin-bottom: 0.75rem;
+    }
+    .skill-bar { height: 2px; background: var(--border); border-radius: 2px; }
+    .skill-bar-fill {
+      height: 100%; background: var(--accent); border-radius: 2px;
+    }
+
+    /* WORK TEASER */
+    .work-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+    .work-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 2.5rem;
+      display: flex; flex-direction: column; justify-content: space-between;
+      min-height: 200px;
+      text-decoration: none;
+      transition: border-color 0.25s, background 0.25s;
+    }
+    .work-card:hover {
+      border-color: rgba(155,51,176,0.4);
+      background: rgba(71,23,84,0.15);
+    }
+    .wt-num {
+      font-family: 'JetBrains Mono', 'Courier New', monospace;
+      font-size: 0.7rem; color: var(--muted); letter-spacing: 2px;
+      display: block; margin-bottom: 1.25rem;
+    }
+    .wt-title {
+      font-family: 'Syne', 'Arial Black', sans-serif;
+      font-size: 1.3rem; font-weight: 700;
+      color: var(--white); letter-spacing: -0.5px;
+      margin-bottom: 0.4rem;
+    }
+    .wt-desc { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
+    .wt-arrow {
+      display: block; margin-top: 1.5rem;
+      font-size: 1.1rem; color: var(--accent);
+      transition: transform 0.2s;
+    }
+    .work-card:hover .wt-arrow { transform: translate(4px, -4px); }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(25px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 640px) {
+      #hero { padding: 7rem 1.5rem 3rem; }
+      .work-grid { grid-template-columns: 1fr; }
+      .skills-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-inner">
+      <p class="hero-eyebrow">Full-stack Web Developer</p>
+      <h1 class="hero-title">
+        João Dahan<br>
+        <span class="role-line">Builder.</span>
+      </h1>
+      <p class="hero-desc">
+        Desenvolvo sites e aplicações web do zero — da interface ao servidor. Entrego o que funciona, no prazo, sem enrolação.
+      </p>
+      <div class="hero-actions">
+        <a href="{{ url_for('projetos') }}" class="btn btn-fill">Ver projetos →</a>
+        <a href="{{ url_for('index') }}#contato" class="btn btn-outline">Contato</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="hr"></div>
+
+  <!-- SKILLS -->
+  <section id="skills">
+    <div class="section-wrap">
+      <p class="eyebrow">Stack</p>
+      <h2 class="page-title" style="font-size:clamp(2rem,4vw,3rem);margin-bottom:2.5rem;">Tecnologias</h2>
+      <div class="skills-grid">
+        <div class="skill-card">
+          <span class="skill-name">JavaScript</span>
+          <div class="skill-bar"><div class="skill-bar-fill" style="width:90%"></div></div>
+        </div>
+        <div class="skill-card">
+          <span class="skill-name">React</span>
+          <div class="skill-bar"><div class="skill-bar-fill" style="width:82%"></div></div>
+        </div>
+        <div class="skill-card">
+          <span class="skill-name">Node.js</span>
+          <div class="skill-bar"><div class="skill-bar-fill" style="width:85%"></div></div>
+        </div>
+        <div class="skill-card">
+          <span class="skill-name">Python</span>
+          <div class="skill-bar"><div class="skill-bar-fill" style="width:75%"></div></div>
+        </div>
+        <div class="skill-card">
+          <span class="skill-name">SQL</span>
+          <div class="skill-bar"><div class="skill-bar-fill" style="width:80%"></div></div>
+        </div>
+        <div class="skill-card">
+          <span class="skill-name">HTML / CSS</span>
+          <div class="skill-bar"><div class="skill-bar-fill" style="width:92%"></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="hr"></div>
+
+  <!-- TRABALHOS -->
+  <section>
+    <div class="section-wrap">
+      <p class="eyebrow">Trabalhos</p>
+      <h2 class="page-title" style="font-size:clamp(2rem,4vw,3rem);margin-bottom:2.5rem;">Seleção</h2>
+      <div class="work-grid">
+        <a href="{{ url_for('projetos') }}" class="work-card">
+          <div>
+            <span class="wt-num">01 — Landing Page</span>
+            <p class="wt-title">Coleção Link in Bio</p>
+            <p class="wt-desc">6 variações de página. HTML, CSS, JS puro.</p>
+          </div>
+          <span class="wt-arrow">↗</span>
+        </a>
+        <a href="{{ url_for('projetos') }}" class="work-card">
+          <div>
+            <span class="wt-num">02 — Site Institucional</span>
+            <p class="wt-title">CEMU</p>
+            <p class="wt-desc">Site escolar completo com matrícula online.</p>
+          </div>
+          <span class="wt-arrow">↗</span>
+        </a>
+      </div>
+      <div style="margin-top:1.5rem;">
+        <a href="{{ url_for('projetos') }}" class="btn btn-outline">Todos os projetos →</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="hr"></div>
+
+  <!-- CONTATO -->
+  <section id="contato">
+    <div class="section-wrap">
+      <p class="eyebrow">Contato</p>
+      <h2 class="page-title" style="font-size:clamp(2rem,4vw,3rem);margin-bottom:1rem;">Tem um projeto?</h2>
+      <p style="color:var(--muted);max-width:400px;margin-bottom:2.5rem;font-weight:300;line-height:1.75;">
+        Me manda uma mensagem. Respondo rápido.
+      </p>
+      <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:2rem;">
+        <a href="https://wa.me/5521970913261" target="_blank" class="btn btn-fill">WhatsApp →</a>
+        <a href="/cdn-cgi/l/email-protection#9bfeeaeef2ebfef1f4faf4fffaf3faf5dbfcf6faf2f7b5f8f4f6a4e8eef9f1fef8efa6caeefee9f4bea9abfdfae1fee9bea9abeef6bea9abf4e9bed8a8bedaacfaf6fef5eff4bea9abf8f4f6bea9abedf4f8bed8a8bedada" class="btn btn-outline">Email</a>
+      </div>
+      <div style="display:flex;gap:2rem;flex-wrap:wrap;">
+        <a href="https://instagram.com/dev.dahan" target="_blank" style="color:var(--muted);font-size:0.82rem;text-decoration:none;letter-spacing:1px;text-transform:uppercase;transition:color 0.2s;" onmouseover="this.style.color='var(--white)'" onmouseout="this.style.color='var(--muted)'">Instagram ↗</a>
+        <a href="https://github.com/dahan1981" target="_blank" style="color:var(--muted);font-size:0.82rem;text-decoration:none;letter-spacing:1px;text-transform:uppercase;transition:color 0.2s;" onmouseover="this.style.color='var(--white)'" onmouseout="this.style.color='var(--muted)'">GitHub ↗</a>
+      </div>
+    </div>
+  </section>
+
+
+{% endblock %}
