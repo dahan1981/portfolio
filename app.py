@@ -92,17 +92,27 @@ def cliente_required(f):
     from functools import wraps
     @wraps(f)
     def decorated(*args, **kwargs):
-        if not session.get('cliente_id'):
+        cliente_id = session.get('cliente_id')
+        if not cliente_id:
             flash('Você precisa estar logado para acessar essa área.', 'aviso')
             session['redirect_after_login'] = request.url
             return redirect(url_for('login'))
+
+        # Sessão antiga/inválida: evita erro em carrinho/área do cliente.
+        if not db.session.get(Cliente, cliente_id):
+            session.pop('cliente_id', None)
+            session.pop('cliente_nome', None)
+            flash('Sua sessão expirou. Faça login novamente.', 'aviso')
+            session['redirect_after_login'] = request.url
+            return redirect(url_for('login'))
+
         return f(*args, **kwargs)
     return decorated
 
 
 def gerar_pagamento_abacatepay(orcamento):
     if not ABACATEPAY_API_KEY:
-        return None, 'Chave AbacatePay não configurada'
+        return None, None, 'Chave AbacatePay não configurada'
 
     headers = {
         'Authorization': f'Bearer {ABACATEPAY_API_KEY}',
@@ -119,7 +129,7 @@ def gerar_pagamento_abacatepay(orcamento):
     }
     try:
         resp = requests.post(f'{ABACATEPAY_BASE_URL}/billing/create', json=payload, headers=headers)
-        data = resp.json()
+        data = resp.json() if resp.content else {}
         if resp.status_code == 200:
             pagamento_id = data.get('id')
             pagamento_url = data.get('url')
@@ -201,7 +211,7 @@ def solicitar_orcamento():
 @cliente_required
 def carrinho():
     cliente_id = session.get('cliente_id')
-    cliente = Cliente.query.get(cliente_id)
+    cliente = db.session.get(Cliente, cliente_id)
     # Mostra todos os orçamentos do cliente no carrinho
     meus_orcamentos = Orcamento.query.filter_by(cliente_id=cliente_id)\
         .order_by(Orcamento.criado_em.desc()).all()
@@ -258,6 +268,10 @@ def cadastro():
         senha = request.form.get('senha', '')
         confirmar = request.form.get('confirmar_senha', '')
 
+        if not nome or not email:
+            flash('Nome e email são obrigatórios.', 'erro')
+            return render_template('cadastro.html')
+
         if senha != confirmar:
             flash('As senhas não coincidem.', 'erro')
             return render_template('cadastro.html')
@@ -286,7 +300,7 @@ def cadastro():
 @app.route('/area-cliente')
 @cliente_required
 def area_cliente():
-    cliente = Cliente.query.get(session['cliente_id'])
+    cliente = db.session.get(Cliente, session['cliente_id'])
     orcamentos_cliente = Orcamento.query.filter_by(cliente_id=cliente.id)\
         .order_by(Orcamento.criado_em.desc()).all()
     return render_template('cliente.html', cliente=cliente, orcamentos=orcamentos_cliente)
@@ -419,12 +433,31 @@ def webhook_abacatepay():
     return jsonify({'ok': True})
 
 
+def aplicar_migracoes_basicas():
+    """Aplica ajustes simples de schema em bancos já existentes (sem Alembic)."""
+    comandos = [
+        "ALTER TABLE orcamento ADD COLUMN descricao_servico VARCHAR(200)",
+        "ALTER TABLE orcamento ADD COLUMN criado_em TIMESTAMP",
+        "ALTER TABLE orcamento ADD COLUMN pago_em TIMESTAMP",
+        "ALTER TABLE cliente ADD COLUMN criado_em TIMESTAMP",
+    ]
+
+    for sql in comandos:
+        try:
+            db.session.execute(db.text(sql))
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
+
+
+
 # ══════════════════════════════════════
 # INIT
 # ══════════════════════════════════════
 
 with app.app_context():
     db.create_all()
+    aplicar_migracoes_basicas()
 
 if __name__ == '__main__':
     app.run(debug=False)
