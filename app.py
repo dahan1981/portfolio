@@ -119,7 +119,7 @@ def gerar_pagamento_abacatepay(orcamento):
     }
     try:
         resp = requests.post(f'{ABACATEPAY_BASE_URL}/billing/create', json=payload, headers=headers)
-        data = resp.json()
+        data = resp.json() if resp.content else {}
         if resp.status_code == 200:
             pagamento_id = data.get('id')
             pagamento_url = data.get('url')
@@ -201,7 +201,7 @@ def solicitar_orcamento():
 @cliente_required
 def carrinho():
     cliente_id = session.get('cliente_id')
-    cliente = Cliente.query.get(cliente_id)
+    cliente = db.session.get(Cliente, cliente_id)
     # Mostra todos os orçamentos do cliente no carrinho
     meus_orcamentos = Orcamento.query.filter_by(cliente_id=cliente_id)\
         .order_by(Orcamento.criado_em.desc()).all()
@@ -258,6 +258,10 @@ def cadastro():
         senha = request.form.get('senha', '')
         confirmar = request.form.get('confirmar_senha', '')
 
+        if not nome or not email:
+            flash('Nome e email s?o obrigat?rios.', 'erro')
+            return render_template('cadastro.html')
+
         if senha != confirmar:
             flash('As senhas não coincidem.', 'erro')
             return render_template('cadastro.html')
@@ -286,7 +290,7 @@ def cadastro():
 @app.route('/area-cliente')
 @cliente_required
 def area_cliente():
-    cliente = Cliente.query.get(session['cliente_id'])
+    cliente = db.session.get(Cliente, session['cliente_id'])
     orcamentos_cliente = Orcamento.query.filter_by(cliente_id=cliente.id)\
         .order_by(Orcamento.criado_em.desc()).all()
     return render_template('cliente.html', cliente=cliente, orcamentos=orcamentos_cliente)
