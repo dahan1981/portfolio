@@ -2,6 +2,7 @@ import os
 import json
 import requests
 from datetime import datetime
+from urllib.parse import quote
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
@@ -24,6 +25,7 @@ bcrypt = Bcrypt(app)
 ABACATEPAY_API_KEY = os.environ.get('ABACATEPAY_API_KEY', '')
 ABACATEPAY_BASE_URL = 'https://api.abacatepay.com/v1'
 ADMIN_PASSWORD_PLAIN = os.environ.get('ADMIN_PASSWORD', 'Dahan1005@')
+WHATSAPP_ORCAMENTO_NUMERO = os.environ.get('WHATSAPP_ORCAMENTO_NUMERO', '5521970913261')
 
 
 # ══════════════════════════════════════
@@ -199,21 +201,23 @@ def solicitar_orcamento():
     db.session.add(orc)
     db.session.commit()
 
+    # Continua indo para o painel admin via banco e já monta mensagem para WhatsApp
     partes = [
-        f"?? Novo or?amento #{orc.id}",
+        f"📩 Novo orçamento #{orc.id}",
         f"Nome: {orc.nome}",
         f"Email: {orc.email}",
         f"Telefone: {orc.telefone or '-'}",
-        f"Servi?o: {orc.tipo_servico}",
-        f"Descri??o: {orc.descricao_servico or '-'}",
+        f"Serviço: {orc.tipo_servico}",
+        f"Descrição: {orc.descricao_servico or '-'}",
         f"Detalhes: {orc.mensagem or '-'}",
     ]
     texto = quote('\n'.join(partes))
 
     flash(
-        f'Or?amento #{orc.id} enviado com sucesso! Seus dados tamb?m foram preparados no WhatsApp.',
+        f'Orçamento #{orc.id} enviado com sucesso! Seus dados também foram preparados no WhatsApp.',
         'sucesso'
     )
+
     return redirect(f"https://wa.me/{WHATSAPP_ORCAMENTO_NUMERO}?text={texto}")
 
 
