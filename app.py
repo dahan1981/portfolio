@@ -1,4 +1,5 @@
 import os
+import json
 import requests
 from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
@@ -11,10 +12,7 @@ load_dotenv()
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-key-troque-em-producao')
 
-# ── BANCO DE DADOS ──
-# Usa PostgreSQL no Railway (DATABASE_URL) ou SQLite local para desenvolvimento
 database_url = os.environ.get('DATABASE_URL', 'sqlite:///database.db')
-# Railway fornece URLs com prefixo "postgres://", mas SQLAlchemy exige "postgresql://"
 if database_url.startswith('postgres://'):
     database_url = database_url.replace('postgres://', 'postgresql://', 1)
 app.config['SQLALCHEMY_DATABASE_URI'] = database_url
@@ -25,9 +23,6 @@ bcrypt = Bcrypt(app)
 
 ABACATEPAY_API_KEY = os.environ.get('ABACATEPAY_API_KEY', '')
 ABACATEPAY_BASE_URL = 'https://api.abacatepay.com/v1'
-
-# ── SENHA ADMIN via variável de ambiente ──
-# No Railway, adicione a variável: ADMIN_PASSWORD=SuaSenhaForte
 ADMIN_PASSWORD_PLAIN = os.environ.get('ADMIN_PASSWORD', 'Dahan1005@')
 
 
@@ -57,12 +52,26 @@ class Orcamento(db.Model):
     email = db.Column(db.String(120), nullable=False)
     telefone = db.Column(db.String(20))
     tipo_servico = db.Column(db.String(100), nullable=False)
+    descricao_servico = db.Column(db.String(200))
     mensagem = db.Column(db.Text)
+    # Status: pendente → aprovado → aguardando_pagamento → pago → recusado
     status = db.Column(db.String(30), default='pendente')
     valor = db.Column(db.Float, nullable=True)
     pagamento_id = db.Column(db.String(200), nullable=True)
     pagamento_url = db.Column(db.String(500), nullable=True)
     criado_em = db.Column(db.DateTime, default=datetime.utcnow)
+    pago_em = db.Column(db.DateTime, nullable=True)
+
+    @property
+    def status_label(self):
+        labels = {
+            'pendente': ('Pendente', 'yellow'),
+            'aprovado': ('Aprovado', 'blue'),
+            'aguardando_pagamento': ('Aguard. Pagamento', 'orange'),
+            'pago': ('Pago ✓', 'green'),
+            'recusado': ('Recusado', 'red'),
+        }
+        return labels.get(self.status, (self.status, 'gray'))
 
 
 # ══════════════════════════════════════
@@ -84,6 +93,8 @@ def cliente_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         if not session.get('cliente_id'):
+            flash('Você precisa estar logado para acessar essa área.', 'aviso')
+            session['redirect_after_login'] = request.url
             return redirect(url_for('login'))
         return f(*args, **kwargs)
     return decorated
@@ -110,10 +121,12 @@ def gerar_pagamento_abacatepay(orcamento):
         resp = requests.post(f'{ABACATEPAY_BASE_URL}/billing/create', json=payload, headers=headers)
         data = resp.json()
         if resp.status_code == 200:
-            return data.get('url'), None
-        return None, data.get('message', 'Erro ao gerar pagamento')
+            pagamento_id = data.get('id')
+            pagamento_url = data.get('url')
+            return pagamento_id, pagamento_url, None
+        return None, None, data.get('message', 'Erro ao gerar pagamento')
     except Exception as e:
-        return None, str(e)
+        return None, None, str(e)
 
 
 # ══════════════════════════════════════
@@ -136,17 +149,25 @@ def projetos():
 def galeria():
     return render_template('galeria.html')
 
+
+# ══════════════════════════════════════
+# SISTEMA DE ORÇAMENTO (requer login)
+# ══════════════════════════════════════
+
 @app.route('/orcamentos')
+@cliente_required
 def orcamentos():
     return render_template('orcamentos.html')
 
 
 @app.route('/solicitar-orcamento', methods=['POST'])
+@cliente_required
 def solicitar_orcamento():
     nome = request.form.get('nome', '').strip()
     email = request.form.get('email', '').strip()
     telefone = request.form.get('telefone', '').strip()
     tipo_servico = request.form.get('tipo_servico', '').strip()
+    descricao_servico = request.form.get('descricao_servico', '').strip()
     mensagem = request.form.get('mensagem', '').strip()
 
     if not nome or not email or not tipo_servico:
@@ -160,6 +181,7 @@ def solicitar_orcamento():
         email=email,
         telefone=telefone,
         tipo_servico=tipo_servico,
+        descricao_servico=descricao_servico,
         mensagem=mensagem,
         cliente_id=cliente_id,
         status='pendente'
@@ -167,8 +189,40 @@ def solicitar_orcamento():
     db.session.add(orc)
     db.session.commit()
 
-    flash('Orçamento enviado! Entrarei em contato em breve.', 'sucesso')
-    return redirect(url_for('orcamentos'))
+    flash(f'Orçamento #{orc.id} enviado com sucesso! Acompanhe pelo carrinho.', 'sucesso')
+    return redirect(url_for('carrinho'))
+
+
+# ══════════════════════════════════════
+# CARRINHO
+# ══════════════════════════════════════
+
+@app.route('/carrinho')
+@cliente_required
+def carrinho():
+    cliente_id = session.get('cliente_id')
+    cliente = Cliente.query.get(cliente_id)
+    # Mostra todos os orçamentos do cliente no carrinho
+    meus_orcamentos = Orcamento.query.filter_by(cliente_id=cliente_id)\
+        .order_by(Orcamento.criado_em.desc()).all()
+    return render_template('carrinho.html', cliente=cliente, orcamentos=meus_orcamentos)
+
+
+@app.route('/carrinho/pagar/<int:id>')
+@cliente_required
+def carrinho_pagar(id):
+    orc = Orcamento.query.get_or_404(id)
+
+    # Segurança: só o dono pode pagar
+    if orc.cliente_id != session.get('cliente_id'):
+        flash('Acesso negado.', 'erro')
+        return redirect(url_for('carrinho'))
+
+    if orc.status != 'aguardando_pagamento' or not orc.pagamento_url:
+        flash('Este orçamento ainda não foi aprovado para pagamento.', 'aviso')
+        return redirect(url_for('carrinho'))
+
+    return redirect(orc.pagamento_url)
 
 
 # ══════════════════════════════════════
@@ -188,7 +242,9 @@ def login():
         if cliente and cliente.check_senha(senha):
             session['cliente_id'] = cliente.id
             session['cliente_nome'] = cliente.nome
-            return redirect(url_for('area_cliente'))
+            # Redireciona para onde tentou acessar antes do login
+            next_url = session.pop('redirect_after_login', None)
+            return redirect(next_url or url_for('area_cliente'))
         flash('Email ou senha incorretos.', 'erro')
 
     return render_template('login.html')
@@ -200,10 +256,19 @@ def cadastro():
         nome = request.form.get('nome', '').strip()
         email = request.form.get('email', '').strip()
         senha = request.form.get('senha', '')
+        confirmar = request.form.get('confirmar_senha', '')
+
+        if senha != confirmar:
+            flash('As senhas não coincidem.', 'erro')
+            return render_template('cadastro.html')
+
+        if len(senha) < 6:
+            flash('A senha deve ter pelo menos 6 caracteres.', 'erro')
+            return render_template('cadastro.html')
 
         if Cliente.query.filter_by(email=email).first():
             flash('Email já cadastrado.', 'erro')
-            return render_template('login.html', modo='cadastro')
+            return render_template('cadastro.html')
 
         cliente = Cliente(nome=nome, email=email)
         cliente.set_senha(senha)
@@ -211,16 +276,19 @@ def cadastro():
         db.session.commit()
         session['cliente_id'] = cliente.id
         session['cliente_nome'] = cliente.nome
-        return redirect(url_for('area_cliente'))
 
-    return render_template('login.html', modo='cadastro')
+        next_url = session.pop('redirect_after_login', None)
+        return redirect(next_url or url_for('area_cliente'))
+
+    return render_template('cadastro.html')
 
 
 @app.route('/area-cliente')
 @cliente_required
 def area_cliente():
     cliente = Cliente.query.get(session['cliente_id'])
-    orcamentos_cliente = Orcamento.query.filter_by(cliente_id=cliente.id).order_by(Orcamento.criado_em.desc()).all()
+    orcamentos_cliente = Orcamento.query.filter_by(cliente_id=cliente.id)\
+        .order_by(Orcamento.criado_em.desc()).all()
     return render_template('cliente.html', cliente=cliente, orcamentos=orcamentos_cliente)
 
 
@@ -253,15 +321,30 @@ def admin_login():
 @app.route('/admin/painel')
 @admin_required
 def admin_painel():
-    orcamentos_todos = Orcamento.query.order_by(Orcamento.criado_em.desc()).all()
+    filtro = request.args.get('status', 'todos')
+    query = Orcamento.query.order_by(Orcamento.criado_em.desc())
+    if filtro != 'todos':
+        query = query.filter_by(status=filtro)
+
+    orcamentos_todos = query.all()
     clientes_todos = Cliente.query.order_by(Cliente.criado_em.desc()).all()
-    total_pendente = Orcamento.query.filter_by(status='pendente').count()
-    total_pago = Orcamento.query.filter_by(status='pago').count()
+
+    stats = {
+        'total': Orcamento.query.count(),
+        'pendente': Orcamento.query.filter_by(status='pendente').count(),
+        'aprovado': Orcamento.query.filter_by(status='aprovado').count(),
+        'aguardando_pagamento': Orcamento.query.filter_by(status='aguardando_pagamento').count(),
+        'pago': Orcamento.query.filter_by(status='pago').count(),
+        'recusado': Orcamento.query.filter_by(status='recusado').count(),
+        'receita_total': db.session.query(db.func.sum(Orcamento.valor))
+            .filter_by(status='pago').scalar() or 0,
+    }
+
     return render_template('admin.html',
         orcamentos=orcamentos_todos,
         clientes=clientes_todos,
-        total_pendente=total_pendente,
-        total_pago=total_pago
+        stats=stats,
+        filtro_ativo=filtro
     )
 
 
@@ -281,14 +364,32 @@ def admin_atualizar_status(id):
     if novo_status:
         orc.status = novo_status
 
+    # Quando admin aprova, gera link de pagamento automaticamente
     if novo_status == 'aprovado' and orc.valor:
-        url_pag, erro = gerar_pagamento_abacatepay(orc)
-        if url_pag:
-            orc.pagamento_url = url_pag
+        pag_id, pag_url, erro = gerar_pagamento_abacatepay(orc)
+        if pag_url:
+            orc.pagamento_id = pag_id
+            orc.pagamento_url = pag_url
             orc.status = 'aguardando_pagamento'
+            flash(f'Orçamento #{id} aprovado e link de pagamento gerado!', 'sucesso')
+        else:
+            flash(f'Orçamento aprovado, mas erro ao gerar pagamento: {erro}', 'aviso')
+    else:
+        flash(f'Orçamento #{id} atualizado para: {novo_status}.', 'sucesso')
 
     db.session.commit()
-    flash(f'Orçamento #{id} atualizado.', 'sucesso')
+    return redirect(url_for('admin_painel'))
+
+
+@app.route('/admin/orcamento/<int:id>/marcar-pago', methods=['POST'])
+@admin_required
+def admin_marcar_pago(id):
+    """Permite admin marcar manualmente como pago (para testes ou pagamento fora da plataforma)"""
+    orc = Orcamento.query.get_or_404(id)
+    orc.status = 'pago'
+    orc.pago_em = datetime.utcnow()
+    db.session.commit()
+    flash(f'Orçamento #{id} marcado como PAGO.', 'sucesso')
     return redirect(url_for('admin_painel'))
 
 
@@ -312,6 +413,7 @@ def webhook_abacatepay():
         orc = Orcamento.query.filter_by(pagamento_id=pagamento_id).first()
         if orc:
             orc.status = 'pago'
+            orc.pago_em = datetime.utcnow()
             db.session.commit()
 
     return jsonify({'ok': True})

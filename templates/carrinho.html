@@ -1,0 +1,257 @@
+{% extends "base.html" %}
+{% block title %}Meu Carrinho — João Dahan{% endblock %}
+
+{% block extra_css %}
+<style>
+  .cart-hero {
+    padding: 9rem 3rem 3rem; position: relative; z-index: 1;
+    max-width: 1000px; margin: 0 auto;
+  }
+  .cart-hero h1 {
+    font-family: 'Syne', sans-serif; font-size: clamp(2.5rem, 6vw, 5rem);
+    font-weight: 800; color: var(--white); letter-spacing: -1.5px; margin-bottom: 0.5rem;
+    opacity: 0; animation: fadeUp 0.6s ease forwards 0.1s;
+  }
+  .cart-hero p {
+    color: var(--muted); font-size: 0.95rem; font-weight: 300;
+    opacity: 0; animation: fadeUp 0.6s ease forwards 0.25s;
+  }
+
+  .cart-wrap {
+    max-width: 1000px; margin: 0 auto; padding: 2rem 3rem 7rem;
+  }
+
+  /* STATUS LEGEND */
+  .legend {
+    display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 2rem;
+    padding: 1rem 1.25rem;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+  }
+  .legend-item {
+    display: flex; align-items: center; gap: 0.4rem;
+    font-size: 0.75rem; color: var(--muted); font-family: 'JetBrains Mono', monospace;
+  }
+  .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+  /* LISTA */
+  .cart-list { display: flex; flex-direction: column; gap: 0;
+    border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+
+  .cart-item {
+    background: var(--surface); padding: 1.75rem 2rem;
+    border-bottom: 1px solid var(--border);
+    display: grid; grid-template-columns: 40px 1fr auto;
+    gap: 1.5rem; align-items: center;
+    transition: background 0.2s;
+  }
+  .cart-item:last-child { border-bottom: none; }
+  .cart-item:hover { background: rgba(71,23,84,0.1); }
+  .cart-item.item-pago { border-left: 3px solid #00c48c; }
+  .cart-item.item-aguardando_pagamento { border-left: 3px solid #9b33b0; }
+  .cart-item.item-aprovado { border-left: 3px solid #3b82f6; }
+  .cart-item.item-recusado { border-left: 3px solid rgba(220,50,50,0.5); opacity: 0.6; }
+
+  .ci-num {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.7rem;
+    color: var(--muted); letter-spacing: 2px; text-align: center;
+  }
+
+  .ci-body {}
+  .ci-title {
+    font-family: 'Syne', sans-serif; font-weight: 700;
+    color: var(--white); font-size: 1rem; margin-bottom: 0.3rem;
+  }
+  .ci-meta {
+    display: flex; gap: 1.25rem; flex-wrap: wrap;
+    font-size: 0.8rem; color: var(--muted);
+  }
+  .ci-date::before { content: '📅 '; }
+  .ci-valor { color: var(--accent); font-weight: 500; }
+
+  .ci-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 0.6rem; }
+  .ci-status {
+    display: inline-block; font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem; letter-spacing: 1.5px; text-transform: uppercase;
+    padding: 3px 10px; border-radius: 50px; white-space: nowrap;
+  }
+  .status-pendente { background: rgba(255,180,0,0.12); color: #ffb400; border: 1px solid rgba(255,180,0,0.3); }
+  .status-aprovado { background: rgba(59,130,246,0.12); color: #60a5fa; border: 1px solid rgba(59,130,246,0.3); }
+  .status-aguardando_pagamento { background: rgba(155,51,176,0.15); color: #b03ec8; border: 1px solid rgba(155,51,176,0.3); }
+  .status-pago { background: rgba(0,196,140,0.15); color: #00c48c; border: 1px solid rgba(0,196,140,0.4); }
+  .status-recusado { background: rgba(220,50,50,0.12); color: #ff6b6b; border: 1px solid rgba(220,50,50,0.3); }
+
+  .btn-pagar {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    background: var(--accent); color: var(--bg);
+    border: none; border-radius: 6px; padding: 0.5rem 1.1rem;
+    font-size: 0.8rem; font-weight: 600; cursor: pointer;
+    text-decoration: none; transition: background 0.2s;
+    font-family: 'Inter', sans-serif;
+  }
+  .btn-pagar:hover { background: #b03ec8; }
+
+  /* SUMÁRIO */
+  .cart-summary {
+    margin-top: 2rem; padding: 1.5rem;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+    display: flex; justify-content: space-between; align-items: center; gap: 2rem; flex-wrap: wrap;
+  }
+  .summary-stats { display: flex; gap: 2.5rem; flex-wrap: wrap; }
+  .stat-item {}
+  .stat-val {
+    font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 800;
+    color: var(--accent); letter-spacing: -1px; line-height: 1;
+  }
+  .stat-lbl { font-size: 0.75rem; color: var(--muted); margin-top: 0.2rem; }
+
+  /* EMPTY */
+  .cart-empty {
+    text-align: center; padding: 5rem 2rem;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+  }
+  .cart-empty .empty-icon { font-size: 3rem; margin-bottom: 1rem; }
+  .cart-empty p { color: var(--muted); margin-bottom: 1.5rem; }
+
+  /* PROGRESSO */
+  .status-flow {
+    display: flex; align-items: center; gap: 0.25rem;
+    font-size: 0.65rem; font-family: 'JetBrains Mono', monospace;
+    color: var(--muted); flex-wrap: wrap;
+  }
+  .sf-step { padding: 2px 6px; border-radius: 3px; }
+  .sf-step.done { color: #00c48c; }
+  .sf-step.current { color: var(--accent); font-weight: 700; }
+  .sf-arrow { color: var(--border); }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(25px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @media (max-width: 768px) {
+    .cart-hero, .cart-wrap { padding-left: 1.5rem; padding-right: 1.5rem; }
+    .cart-item { grid-template-columns: 1fr; gap: 0.75rem; }
+    .ci-num { display: none; }
+    .ci-actions { flex-direction: row; align-items: center; }
+    .cart-summary { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="cart-hero">
+  <p class="eyebrow" style="opacity:1;animation:none;">Meus orçamentos</p>
+  <h1>Carrinho 🛒</h1>
+  <p>Acompanhe o status dos seus pedidos aqui. Quando aprovado, o link de pagamento aparece automaticamente.</p>
+</div>
+
+<div class="cart-wrap">
+
+  <!-- FLASH -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}{% for category, message in messages %}
+      <div style="padding:0.85rem 1.25rem;border-radius:6px;font-size:0.875rem;margin-bottom:1rem;
+        background:{% if category == 'sucesso' %}rgba(0,196,140,0.1){% else %}rgba(245,158,11,0.1){% endif %};
+        border:1px solid {% if category == 'sucesso' %}rgba(0,196,140,0.3){% else %}rgba(245,158,11,0.3){% endif %};
+        color:{% if category == 'sucesso' %}#00c48c{% else %}#fbbf24{% endif %};">
+        {{ message }}
+      </div>
+    {% endfor %}{% endif %}
+  {% endwith %}
+
+  <!-- LEGENDA -->
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#ffb400;"></div>Pendente — aguardando análise</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#60a5fa;"></div>Aprovado</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#9b33b0;"></div>Aguardando pagamento</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#00c48c;"></div>Pago ✓</div>
+  </div>
+
+  {% if orcamentos %}
+
+    <div class="cart-list">
+      {% for orc in orcamentos %}
+      <div class="cart-item item-{{ orc.status }}">
+
+        <div class="ci-num">#{{ orc.id }}</div>
+
+        <div class="ci-body">
+          <h3 class="ci-title">{{ orc.tipo_servico }}</h3>
+          {% if orc.descricao_servico %}<p style="font-size:0.82rem;color:var(--muted);margin-bottom:0.4rem;">{{ orc.descricao_servico }}</p>{% endif %}
+          <div class="ci-meta">
+            <span class="ci-date">{{ orc.criado_em.strftime('%d/%m/%Y') }}</span>
+            {% if orc.valor %}
+              <span class="ci-valor">R$ {{ '%.2f'|format(orc.valor) }}</span>
+            {% else %}
+              <span style="color:var(--muted);">Valor a definir</span>
+            {% endif %}
+          </div>
+          <!-- Barra de progresso -->
+          <div class="status-flow" style="margin-top:0.5rem;">
+            <span class="sf-step {% if orc.status in ['pendente','aprovado','aguardando_pagamento','pago'] %}done{% endif %}">pendente</span>
+            <span class="sf-arrow">→</span>
+            <span class="sf-step {% if orc.status in ['aprovado','aguardando_pagamento','pago'] %}done{% elif orc.status == 'recusado' %}{% else %}{% endif %}">aprovado</span>
+            <span class="sf-arrow">→</span>
+            <span class="sf-step {% if orc.status in ['aguardando_pagamento','pago'] %}done{% endif %} {% if orc.status == 'aguardando_pagamento' %}current{% endif %}">pgto</span>
+            <span class="sf-arrow">→</span>
+            <span class="sf-step {% if orc.status == 'pago' %}done{% endif %}">pago ✓</span>
+          </div>
+        </div>
+
+        <div class="ci-actions">
+          <span class="ci-status status-{{ orc.status }}">{{ orc.status.replace('_',' ') }}</span>
+          {% if orc.status == 'aguardando_pagamento' and orc.pagamento_url %}
+            <a href="{{ url_for('carrinho_pagar', id=orc.id) }}" class="btn-pagar">Pagar agora →</a>
+          {% elif orc.status == 'pago' %}
+            <span style="font-size:0.8rem;color:#00c48c;">✓ Concluído</span>
+          {% elif orc.status == 'pendente' %}
+            <span style="font-size:0.75rem;color:var(--muted);">Aguardando análise</span>
+          {% endif %}
+        </div>
+
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- SUMÁRIO -->
+    {% set total_pago = orcamentos | selectattr('status', 'equalto', 'pago') | list | length %}
+    {% set total_pendente = orcamentos | selectattr('status', 'equalto', 'pendente') | list | length %}
+    {% set total_aguardando = orcamentos | selectattr('status', 'equalto', 'aguardando_pagamento') | list | length %}
+    <div class="cart-summary">
+      <div class="summary-stats">
+        <div class="stat-item">
+          <div class="stat-val">{{ orcamentos | length }}</div>
+          <div class="stat-lbl">Orçamento(s) total</div>
+        </div>
+        {% if total_pago > 0 %}
+        <div class="stat-item">
+          <div class="stat-val" style="color:#00c48c;">{{ total_pago }}</div>
+          <div class="stat-lbl">Pago(s)</div>
+        </div>
+        {% endif %}
+        {% if total_aguardando > 0 %}
+        <div class="stat-item">
+          <div class="stat-val" style="color:#b03ec8;">{{ total_aguardando }}</div>
+          <div class="stat-lbl">Aguardando pagamento</div>
+        </div>
+        {% endif %}
+        {% if total_pendente > 0 %}
+        <div class="stat-item">
+          <div class="stat-val" style="color:#ffb400;">{{ total_pendente }}</div>
+          <div class="stat-lbl">Pendente(s)</div>
+        </div>
+        {% endif %}
+      </div>
+      <a href="{{ url_for('orcamentos') }}" class="btn btn-outline">+ Novo orçamento</a>
+    </div>
+
+  {% else %}
+    <div class="cart-empty">
+      <div class="empty-icon">🛒</div>
+      <p>Você ainda não enviou nenhum orçamento.</p>
+      <a href="{{ url_for('orcamentos') }}" class="btn btn-fill">Solicitar orçamento →</a>
+    </div>
+  {% endif %}
+
+</div>
+{% endblock %}

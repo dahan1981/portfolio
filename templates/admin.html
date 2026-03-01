@@ -6,305 +6,319 @@
   <title>Painel Admin — João Dahan</title>
   <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}" />
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
-
   <style>
     body { padding-top: 0; }
-
     .admin-nav {
       position: sticky; top: 0; z-index: 100;
-      background: rgba(7,6,10,0.95);
-      backdrop-filter: blur(20px);
+      background: rgba(7,6,10,0.97); backdrop-filter: blur(20px);
       border-bottom: 1px solid var(--border);
-      padding: 1rem 2rem;
-      display: flex; justify-content: space-between; align-items: center;
+      padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center;
     }
     .admin-nav-logo {
-      font-family: 'Syne', 'Arial Black', sans-serif;
-      font-weight: 800; font-size: 1rem;
-      letter-spacing: 3px; color: var(--white);
-      text-transform: uppercase;
+      font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1rem;
+      letter-spacing: 3px; color: var(--white); text-transform: uppercase;
     }
     .admin-nav-logo span { color: var(--accent); }
+    .admin-wrap { max-width: 1200px; margin: 0 auto; padding: 2rem 2rem 4rem; }
 
-    .admin-wrap { max-width: 1100px; margin: 0 auto; padding: 2rem; }
-
+    /* STATS */
     .stats-row {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-      gap: 1rem;
-      margin-bottom: 3rem;
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 1px; margin-bottom: 2.5rem;
+      background: var(--border); border: 1px solid var(--border); border-radius: 8px; overflow: hidden;
     }
-    .stat-box {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 1.5rem;
-    }
+    .stat-box { background: var(--surface); padding: 1.5rem; transition: background 0.2s; }
+    .stat-box:hover { background: rgba(71,23,84,0.2); }
     .stat-box .num {
-      font-family: 'Syne', 'Arial Black', sans-serif;
-      font-size: 2.2rem; font-weight: 800;
-      color: var(--accent);
-      letter-spacing: -1px;
-      line-height: 1;
+      font-family: 'Syne', sans-serif; font-size: 2.2rem; font-weight: 800;
+      color: var(--accent); letter-spacing: -1px; line-height: 1;
     }
-    .stat-box .lbl { font-size: 0.8rem; color: var(--muted); margin-top: 0.25rem; }
+    .stat-box .lbl { font-size: 0.75rem; color: var(--muted); margin-top: 0.3rem; }
+    .stat-box.pago .num { color: #00c48c; }
+    .stat-box.receita .num { font-size: 1.5rem; color: #00c48c; }
+
+    /* FILTROS */
+    .filtros {
+      display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 1.5rem;
+    }
+    .filtro-btn {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.65rem;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      padding: 0.35rem 0.9rem; border-radius: 50px;
+      border: 1px solid var(--border); background: transparent;
+      color: var(--muted); cursor: pointer; text-decoration: none; transition: all 0.2s;
+    }
+    .filtro-btn:hover, .filtro-btn.active {
+      border-color: var(--accent); color: var(--accent); background: rgba(155,51,176,0.08);
+    }
 
     .section-title {
-      font-family: 'Syne', 'Arial Black', sans-serif;
-      font-size: 1.3rem; font-weight: 700;
-      color: var(--white);
-      margin-bottom: 1rem;
-      letter-spacing: -0.5px;
+      font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 700;
+      color: var(--white); margin-bottom: 1rem; letter-spacing: -0.5px;
     }
 
+    /* TABELA */
     .admin-table {
-      width: 100%;
-      border-collapse: collapse;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      overflow: hidden;
-      margin-bottom: 3rem;
+      width: 100%; border-collapse: collapse;
+      border: 1px solid var(--border); border-radius: 8px;
+      overflow: hidden; margin-bottom: 3rem;
     }
     .admin-table th {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.65rem; color: var(--muted);
+      font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; color: var(--muted);
       letter-spacing: 2px; text-transform: uppercase;
-      padding: 0.85rem 1rem;
-      text-align: left;
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
+      padding: 0.85rem 1rem; text-align: left;
+      background: var(--surface); border-bottom: 1px solid var(--border);
       white-space: nowrap;
     }
     .admin-table td {
-      padding: 0.85rem 1rem;
-      font-size: 0.85rem;
-      color: var(--text);
-      border-bottom: 1px solid var(--border);
-      background: var(--bg2);
+      padding: 0.85rem 1rem; font-size: 0.84rem; color: var(--text);
+      border-bottom: 1px solid var(--border); background: var(--bg2);
       vertical-align: middle;
     }
     .admin-table tr:last-child td { border-bottom: none; }
     .admin-table tr:hover td { background: rgba(71,23,84,0.1); }
 
+    /* STATUS BADGE */
     .status-badge {
-      display: inline-block;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.62rem; letter-spacing: 1px;
-      text-transform: uppercase;
-      padding: 2px 8px;
-      border-radius: 50px;
-      border: 1px solid transparent;
-      white-space: nowrap;
+      display: inline-block; font-family: 'JetBrains Mono', monospace;
+      font-size: 0.6rem; letter-spacing: 1px; text-transform: uppercase;
+      padding: 2px 8px; border-radius: 50px; border: 1px solid transparent; white-space: nowrap;
     }
     .status-pendente { background: rgba(255,180,0,0.12); color: #ffb400; border-color: rgba(255,180,0,0.3); }
-    .status-aprovado { background: rgba(0,196,140,0.12); color: #00c48c; border-color: rgba(0,196,140,0.3); }
+    .status-aprovado { background: rgba(59,130,246,0.12); color: #60a5fa; border-color: rgba(59,130,246,0.3); }
     .status-aguardando_pagamento { background: rgba(155,51,176,0.15); color: #b03ec8; border-color: rgba(155,51,176,0.3); }
     .status-pago { background: rgba(0,196,140,0.2); color: #00c48c; border-color: rgba(0,196,140,0.4); }
-    .status-cancelado { background: rgba(220,50,50,0.12); color: #ff6b6b; border-color: rgba(220,50,50,0.3); }
+    .status-recusado { background: rgba(220,50,50,0.12); color: #ff6b6b; border-color: rgba(220,50,50,0.3); }
 
-    .action-form {
-      display: flex;
-      gap: 0.4rem;
-      align-items: center;
-      flex-wrap: wrap;
-    }
+    /* ACTION FORMS */
+    .action-wrap { display: flex; flex-direction: column; gap: 0.4rem; }
+    .action-form { display: flex; gap: 0.3rem; align-items: center; flex-wrap: wrap; }
     .action-form input[type="text"] {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 0.35rem 0.6rem;
-      color: var(--text);
-      font-size: 0.8rem;
-      width: 90px;
-      outline: none;
+      background: var(--bg); border: 1px solid var(--border); border-radius: 4px;
+      padding: 0.3rem 0.55rem; color: var(--text); font-size: 0.78rem; width: 85px; outline: none;
     }
     .action-form select {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 0.35rem 0.6rem;
-      color: var(--text);
-      font-size: 0.8rem;
-      outline: none;
+      background: var(--bg); border: 1px solid var(--border); border-radius: 4px;
+      padding: 0.3rem 0.55rem; color: var(--text); font-size: 0.78rem; outline: none;
     }
-    .action-form button {
-      background: var(--accent);
-      color: var(--bg);
-      border: none;
-      border-radius: 4px;
-      padding: 0.35rem 0.75rem;
-      font-size: 0.78rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s;
-      white-space: nowrap;
+    .btn-action {
+      background: var(--accent); color: var(--bg); border: none; border-radius: 4px;
+      padding: 0.3rem 0.7rem; font-size: 0.75rem; font-weight: 600; cursor: pointer;
+      white-space: nowrap; transition: background 0.2s;
     }
-    .action-form button:hover { background: #b03ec8; }
+    .btn-action:hover { background: #b03ec8; }
+    .btn-pago {
+      background: rgba(0,196,140,0.15); border: 1px solid rgba(0,196,140,0.3);
+      color: #00c48c; border-radius: 4px; padding: 0.3rem 0.7rem;
+      font-size: 0.72rem; font-weight: 600; cursor: pointer; white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .btn-pago:hover { background: rgba(0,196,140,0.25); }
 
-    .muted-link { color: var(--muted); font-size: 0.82rem; text-decoration: none; }
+    /* LINKS */
     .accent-link { color: var(--accent); text-decoration: none; }
+    .muted-link { color: var(--muted); font-size: 0.82rem; text-decoration: none; transition: color 0.2s; }
+    .muted-link:hover { color: var(--white); }
     .cell-ellipsis {
-      max-width: 160px;
-      color: var(--muted);
-      font-size: 0.8rem;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+      max-width: 140px; color: var(--muted); font-size: 0.78rem;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
     }
+
+    /* FLASH */
     .flash {
-      padding: 0.75rem 1rem;
-      border-radius: 6px;
-      margin-bottom: 1rem;
-      font-size: 0.85rem;
-      background: rgba(0,196,140,0.1);
-      border: 1px solid rgba(0,196,140,0.3);
-      color: #00c48c;
+      padding: 0.75rem 1.25rem; border-radius: 6px; margin-bottom: 1rem;
+      font-size: 0.85rem; background: rgba(0,196,140,0.1);
+      border: 1px solid rgba(0,196,140,0.3); color: #00c48c;
     }
+    .flash.aviso { background: rgba(245,158,11,0.1); border-color: rgba(245,158,11,0.3); color: #fbbf24; }
+
+    /* PAGO_EM */
+    .pago-em { font-size: 0.7rem; color: #00c48c; }
   </style>
 </head>
-
 <body>
-  <div class="ambient amb-1"></div>
-  <div class="ambient amb-2"></div>
+<div class="ambient amb-1"></div>
+<div class="ambient amb-2"></div>
 
-  <nav class="admin-nav">
-    <span class="admin-nav-logo">Admin<span>.</span></span>
-    <div style="display:flex;gap:1rem;align-items:center;">
-      <a href="{{ url_for('index') }}" class="muted-link">Ver site ↗</a>
-      <a href="{{ url_for('admin_logout') }}" class="muted-link">Sair</a>
-    </div>
-  </nav>
-
-  <div class="admin-wrap">
-
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        {% for category, message in messages %}
-          <div class="flash">{{ message }}</div>
-        {% endfor %}
-      {% endif %}
-    {% endwith %}
-
-    <!-- STATS -->
-    <div class="stats-row">
-      <div class="stat-box">
-        <div class="num">{{ orcamentos|length }}</div>
-        <div class="lbl">Total de orçamentos</div>
-      </div>
-      <div class="stat-box">
-        <div class="num">{{ total_pendente }}</div>
-        <div class="lbl">Pendentes</div>
-      </div>
-      <div class="stat-box">
-        <div class="num">{{ total_pago }}</div>
-        <div class="lbl">Pagos</div>
-      </div>
-      <div class="stat-box">
-        <div class="num">{{ clientes|length }}</div>
-        <div class="lbl">Clientes cadastrados</div>
-      </div>
-    </div>
-
-    <!-- ORÇAMENTOS -->
-    <p class="section-title">Orçamentos</p>
-
-    {% if orcamentos %}
-      <div style="overflow-x:auto;">
-        <table class="admin-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Nome</th>
-              <th>Email</th>
-              <th>Telefone</th>
-              <th>Serviço</th>
-              <th>Mensagem</th>
-              <th>Data</th>
-              <th>Status</th>
-              <th>Valor (R$)</th>
-              <th>Ação</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for orc in orcamentos %}
-              <tr>
-                <td style="color:var(--muted);">{{ orc.id }}</td>
-                <td><strong>{{ orc.nome }}</strong></td>
-                <td>
-                  <a class="accent-link" href="mailto:{{ orc.email }}">{{ orc.email }}</a>
-                </td>
-                <td>{{ orc.telefone or '—' }}</td>
-                <td>{{ orc.tipo_servico }}</td>
-                <td class="cell-ellipsis" title="{{ orc.mensagem or '' }}">{{ orc.mensagem or '—' }}</td>
-                <td style="white-space:nowrap;">
-                  {{ orc.criado_em.strftime('%d/%m/%y %H:%M') if orc.criado_em else '—' }}
-                </td>
-                <td>
-                  <span class="status-badge status-{{ orc.status }}">{{ (orc.status or '').replace('_',' ') }}</span>
-                </td>
-                <td>
-                  {% if orc.valor %}
-                    R$ {{ '%.2f'|format(orc.valor) }}
-                  {% else %}
-                    —
-                  {% endif %}
-                </td>
-                <td>
-                  <form method="POST" action="{{ url_for('admin_atualizar_status', id=orc.id) }}" class="action-form">
-                    <input type="text" name="valor" placeholder="Valor" value="{{ orc.valor or '' }}" />
-                    <select name="status">
-                      <option value="pendente" {% if orc.status == 'pendente' %}selected{% endif %}>Pendente</option>
-                      <option value="aprovado" {% if orc.status == 'aprovado' %}selected{% endif %}>Aprovado</option>
-                      <option value="aguardando_pagamento" {% if orc.status == 'aguardando_pagamento' %}selected{% endif %}>Aguard. pgto</option>
-                      <option value="pago" {% if orc.status == 'pago' %}selected{% endif %}>Pago</option>
-                      <option value="cancelado" {% if orc.status == 'cancelado' %}selected{% endif %}>Cancelado</option>
-                    </select>
-                    <button type="submit">Salvar</button>
-                  </form>
-                </td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    {% else %}
-      <p style="color:var(--muted);margin-bottom:3rem;">Nenhum orçamento ainda.</p>
-    {% endif %}
-
-    <!-- CLIENTES -->
-    <p class="section-title">Clientes cadastrados</p>
-
-    {% if clientes %}
-      <div style="overflow-x:auto;">
-        <table class="admin-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Nome</th>
-              <th>Email</th>
-              <th>Cadastrado em</th>
-              <th>Orçamentos</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for c in clientes %}
-              <tr>
-                <td style="color:var(--muted);">{{ c.id }}</td>
-                <td>{{ c.nome }}</td>
-                <td>
-                  <a class="accent-link" href="mailto:{{ c.email }}">{{ c.email }}</a>
-                </td>
-                <td>{{ c.criado_em.strftime('%d/%m/%Y') if c.criado_em else '—' }}</td>
-                <td>{{ c.orcamentos|length }}</td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    {% else %}
-      <p style="color:var(--muted);">Nenhum cliente cadastrado ainda.</p>
-    {% endif %}
-
+<nav class="admin-nav">
+  <span class="admin-nav-logo">Admin<span>.</span></span>
+  <div style="display:flex;gap:1.5rem;align-items:center;">
+    <a href="{{ url_for('index') }}" class="muted-link">Ver site ↗</a>
+    <a href="{{ url_for('admin_logout') }}" class="muted-link">Sair</a>
   </div>
+</nav>
+
+<div class="admin-wrap">
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="flash {% if category == 'aviso' %}aviso{% endif %}">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-box">
+      <div class="num">{{ stats.total }}</div>
+      <div class="lbl">Total de orçamentos</div>
+    </div>
+    <div class="stat-box">
+      <div class="num" style="color:#ffb400;">{{ stats.pendente }}</div>
+      <div class="lbl">Pendentes</div>
+    </div>
+    <div class="stat-box">
+      <div class="num" style="color:#60a5fa;">{{ stats.aprovado }}</div>
+      <div class="lbl">Aprovados</div>
+    </div>
+    <div class="stat-box">
+      <div class="num" style="color:#b03ec8;">{{ stats.aguardando_pagamento }}</div>
+      <div class="lbl">Aguard. pagamento</div>
+    </div>
+    <div class="stat-box pago">
+      <div class="num">{{ stats.pago }}</div>
+      <div class="lbl">Pagos ✓</div>
+    </div>
+    <div class="stat-box receita">
+      <div class="num">R$ {{ '%.0f'|format(stats.receita_total) }}</div>
+      <div class="lbl">Receita total</div>
+    </div>
+    <div class="stat-box">
+      <div class="num">{{ clientes|length }}</div>
+      <div class="lbl">Clientes</div>
+    </div>
+  </div>
+
+  <!-- FILTROS -->
+  <div class="filtros">
+    <a href="{{ url_for('admin_painel') }}" class="filtro-btn {% if filtro_ativo == 'todos' %}active{% endif %}">Todos</a>
+    <a href="{{ url_for('admin_painel', status='pendente') }}" class="filtro-btn {% if filtro_ativo == 'pendente' %}active{% endif %}">Pendentes</a>
+    <a href="{{ url_for('admin_painel', status='aprovado') }}" class="filtro-btn {% if filtro_ativo == 'aprovado' %}active{% endif %}">Aprovados</a>
+    <a href="{{ url_for('admin_painel', status='aguardando_pagamento') }}" class="filtro-btn {% if filtro_ativo == 'aguardando_pagamento' %}active{% endif %}">Aguard. pgto</a>
+    <a href="{{ url_for('admin_painel', status='pago') }}" class="filtro-btn {% if filtro_ativo == 'pago' %}active{% endif %}">Pagos</a>
+    <a href="{{ url_for('admin_painel', status='recusado') }}" class="filtro-btn {% if filtro_ativo == 'recusado' %}active{% endif %}">Recusados</a>
+  </div>
+
+  <!-- ORÇAMENTOS -->
+  <p class="section-title">Orçamentos
+    {% if filtro_ativo != 'todos' %}<span style="font-size:0.8rem;color:var(--muted);font-weight:400;"> — filtro: {{ filtro_ativo.replace('_',' ') }}</span>{% endif %}
+  </p>
+
+  {% if orcamentos %}
+    <div style="overflow-x:auto;">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Nome</th>
+            <th>Email</th>
+            <th>Tel.</th>
+            <th>Serviço</th>
+            <th>Detalhes</th>
+            <th>Data</th>
+            <th>Status</th>
+            <th>Valor (R$)</th>
+            <th>Pgto. Link</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for orc in orcamentos %}
+          <tr>
+            <td style="color:var(--muted);">{{ orc.id }}</td>
+            <td><strong style="color:var(--white);">{{ orc.nome }}</strong></td>
+            <td><a class="accent-link" href="mailto:{{ orc.email }}">{{ orc.email }}</a></td>
+            <td>{{ orc.telefone or '—' }}</td>
+            <td style="white-space:nowrap;">{{ orc.tipo_servico }}</td>
+            <td class="cell-ellipsis" title="{{ orc.descricao_servico or orc.mensagem or '' }}">
+              {{ orc.descricao_servico or orc.mensagem or '—' }}
+            </td>
+            <td style="white-space:nowrap;">
+              {{ orc.criado_em.strftime('%d/%m/%y %H:%M') if orc.criado_em else '—' }}
+              {% if orc.pago_em %}
+                <div class="pago-em">✓ {{ orc.pago_em.strftime('%d/%m/%y') }}</div>
+              {% endif %}
+            </td>
+            <td>
+              <span class="status-badge status-{{ orc.status }}">{{ (orc.status or '').replace('_',' ') }}</span>
+            </td>
+            <td>
+              {% if orc.valor %}R$ {{ '%.2f'|format(orc.valor) }}{% else %}—{% endif %}
+            </td>
+            <td>
+              {% if orc.pagamento_url %}
+                <a href="{{ orc.pagamento_url }}" target="_blank" class="accent-link" style="font-size:0.78rem;">Ver link ↗</a>
+              {% else %}—{% endif %}
+            </td>
+            <td>
+              <div class="action-wrap">
+                <!-- Atualizar status / valor -->
+                <form method="POST" action="{{ url_for('admin_atualizar_status', id=orc.id) }}" class="action-form">
+                  <input type="text" name="valor" placeholder="Valor" value="{{ orc.valor or '' }}" title="Informe o valor para gerar pagamento" />
+                  <select name="status">
+                    <option value="pendente"              {% if orc.status == 'pendente'              %}selected{% endif %}>Pendente</option>
+                    <option value="aprovado"              {% if orc.status == 'aprovado'              %}selected{% endif %}>Aprovado</option>
+                    <option value="aguardando_pagamento"  {% if orc.status == 'aguardando_pagamento'  %}selected{% endif %}>Aguard. pgto</option>
+                    <option value="recusado"              {% if orc.status == 'recusado'              %}selected{% endif %}>Recusado</option>
+                  </select>
+                  <button type="submit" class="btn-action">Salvar</button>
+                </form>
+                <!-- Marcar manualmente como pago -->
+                {% if orc.status != 'pago' %}
+                <form method="POST" action="{{ url_for('admin_marcar_pago', id=orc.id) }}" class="action-form"
+                      onsubmit="return confirm('Marcar orçamento #{{ orc.id }} como PAGO?')">
+                  <button type="submit" class="btn-pago">✓ Marcar como pago</button>
+                </form>
+                {% else %}
+                  <span style="font-size:0.72rem;color:#00c48c;">✓ Pago</span>
+                {% endif %}
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p style="color:var(--muted);margin-bottom:3rem;">Nenhum orçamento {{ 'com esse filtro' if filtro_ativo != 'todos' else 'ainda' }}.</p>
+  {% endif %}
+
+  <!-- CLIENTES -->
+  <p class="section-title">Clientes cadastrados</p>
+  {% if clientes %}
+    <div style="overflow-x:auto;">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Nome</th>
+            <th>Email</th>
+            <th>Cadastrado em</th>
+            <th>Orçamentos</th>
+            <th>Pagos</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for c in clientes %}
+          <tr>
+            <td style="color:var(--muted);">{{ c.id }}</td>
+            <td>{{ c.nome }}</td>
+            <td><a class="accent-link" href="mailto:{{ c.email }}">{{ c.email }}</a></td>
+            <td>{{ c.criado_em.strftime('%d/%m/%Y') if c.criado_em else '—' }}</td>
+            <td>{{ c.orcamentos|length }}</td>
+            <td style="color:#00c48c;">
+              {{ c.orcamentos | selectattr('status', 'equalto', 'pago') | list | length }}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p style="color:var(--muted);">Nenhum cliente cadastrado ainda.</p>
+  {% endif %}
+
+</div>
 </body>
 </html>

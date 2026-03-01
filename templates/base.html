@@ -21,6 +21,11 @@
     <li><a href="{{ url_for('galeria') }}" {% if request.endpoint == 'galeria' %}class="active"{% endif %}>Galeria</a></li>
     <li><a href="{{ url_for('orcamentos') }}" {% if request.endpoint == 'orcamentos' %}class="active"{% endif %}>Orçamentos</a></li>
     {% if session.get('cliente_id') %}
+    <li>
+      <a href="{{ url_for('carrinho') }}" {% if request.endpoint == 'carrinho' %}class="active"{% endif %} style="position:relative;">
+        🛒 Carrinho
+      </a>
+    </li>
     <li><a href="{{ url_for('area_cliente') }}" {% if request.endpoint == 'area_cliente' %}class="active"{% endif %}>Minha Área</a></li>
     <li><a href="{{ url_for('logout') }}">Sair</a></li>
     {% else %}
