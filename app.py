@@ -268,10 +268,6 @@ def cadastro():
         senha = request.form.get('senha', '')
         confirmar = request.form.get('confirmar_senha', '')
 
-        if not nome or not email:
-            flash('Nome e email são obrigatórios.', 'erro')
-            return render_template('cadastro.html')
-
         if senha != confirmar:
             flash('As senhas não coincidem.', 'erro')
             return render_template('cadastro.html')
