@@ -181,7 +181,7 @@ def solicitar_orcamento():
     mensagem = request.form.get('mensagem', '').strip()
 
     if not nome or not email or not tipo_servico:
-        flash('Preencha todos os campos obrigatórios.', 'erro')
+        flash('Preencha todos os campos obrigat?rios.', 'erro')
         return redirect(url_for('orcamentos'))
 
     cliente_id = session.get('cliente_id')
@@ -199,13 +199,23 @@ def solicitar_orcamento():
     db.session.add(orc)
     db.session.commit()
 
-    flash(f'Orçamento #{orc.id} enviado com sucesso! Acompanhe pelo carrinho.', 'sucesso')
-    return redirect(url_for('carrinho'))
+    partes = [
+        f"?? Novo or?amento #{orc.id}",
+        f"Nome: {orc.nome}",
+        f"Email: {orc.email}",
+        f"Telefone: {orc.telefone or '-'}",
+        f"Servi?o: {orc.tipo_servico}",
+        f"Descri??o: {orc.descricao_servico or '-'}",
+        f"Detalhes: {orc.mensagem or '-'}",
+    ]
+    texto = quote('\n'.join(partes))
 
+    flash(
+        f'Or?amento #{orc.id} enviado com sucesso! Seus dados tamb?m foram preparados no WhatsApp.',
+        'sucesso'
+    )
+    return redirect(f"https://wa.me/{WHATSAPP_ORCAMENTO_NUMERO}?text={texto}")
 
-# ══════════════════════════════════════
-# CARRINHO
-# ══════════════════════════════════════
 
 @app.route('/carrinho')
 @cliente_required
