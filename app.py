@@ -268,6 +268,10 @@ def cadastro():
         senha = request.form.get('senha', '')
         confirmar = request.form.get('confirmar_senha', '')
 
+        if not nome or not email:
+            flash('Nome e email são obrigatórios.', 'erro')
+            return render_template('cadastro.html')
+
         if senha != confirmar:
             flash('As senhas não coincidem.', 'erro')
             return render_template('cadastro.html')
@@ -429,12 +433,31 @@ def webhook_abacatepay():
     return jsonify({'ok': True})
 
 
+def aplicar_migracoes_basicas():
+    """Aplica ajustes simples de schema em bancos já existentes (sem Alembic)."""
+    comandos = [
+        "ALTER TABLE orcamento ADD COLUMN descricao_servico VARCHAR(200)",
+        "ALTER TABLE orcamento ADD COLUMN criado_em TIMESTAMP",
+        "ALTER TABLE orcamento ADD COLUMN pago_em TIMESTAMP",
+        "ALTER TABLE cliente ADD COLUMN criado_em TIMESTAMP",
+    ]
+
+    for sql in comandos:
+        try:
+            db.session.execute(db.text(sql))
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
+
+
+
 # ══════════════════════════════════════
 # INIT
 # ══════════════════════════════════════
 
 with app.app_context():
     db.create_all()
+    aplicar_migracoes_basicas()
 
 if __name__ == '__main__':
     app.run(debug=False)
