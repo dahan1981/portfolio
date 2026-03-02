@@ -138,6 +138,23 @@
   .lb-close:hover { color: var(--white); }
   .lb-media { flex: 1; overflow: hidden; position: relative; }
   .lb-media img { width: 100%; height: 100%; object-fit: contain; display: block; max-height: 60vh; }
+  .lb-gallery { position: relative; width: 100%; height: 60vh; background: #07070b; }
+  .lb-gallery img { width: 100%; height: 100%; object-fit: contain; display: block; }
+  .lb-gallery-btn {
+    position: absolute; top: 50%; transform: translateY(-50%); z-index: 2;
+    border: 1px solid rgba(255,255,255,.18); background: rgba(0,0,0,.45); color: #fff;
+    padding: 0.45rem 0.7rem; border-radius: 10px; cursor: pointer;
+  }
+  .lb-gallery-btn.prev { left: 0.75rem; }
+  .lb-gallery-btn.next { right: 0.75rem; }
+  .lb-gallery-dots {
+    position: absolute; left: 0; right: 0; bottom: 0.75rem;
+    display: flex; justify-content: center; gap: 0.4rem; z-index: 2;
+  }
+  .lb-gallery-dot {
+    width: 8px; height: 8px; border-radius: 999px; background: rgba(255,255,255,.35);
+  }
+  .lb-gallery-dot.active { background: #a445c6; }
   .lb-media iframe { width: 100%; height: 60vh; border: none; }
   .lb-placeholder {
     width: 100%; height: 60vh;
@@ -218,7 +235,8 @@
        data-title="Coleção Link in Bio"
        data-tag="Landing Page / HTML / CSS"
        data-desc="6 variações de landing page para uso como Link in Bio. Layouts distintos com identidade visual própria. Otimizados para mobile e carregamento rápido."
-       data-type="placeholder"
+       data-type="gallery"
+       data-images="/static/portfolio/linkbio-1.svg,/static/portfolio/linkbio-2.svg,/static/portfolio/linkbio-3.svg,/static/portfolio/linkbio-4.svg"
        onclick="abrirLightbox(this)">
     <div class="gi-overlay">
       <span class="gi-overlay-icon">🔗</span>
@@ -296,6 +314,8 @@
   // Itens da galeria (apenas os clicáveis)
   const items = Array.from(document.querySelectorAll('.galeria-item:not(.empty)'));
   let currentIdx = 0;
+  let galleryImages = [];
+  let gallerySlide = 0;
 
   function abrirLightbox(el) {
     currentIdx = items.indexOf(el);
@@ -311,6 +331,7 @@
     const desc  = el.dataset.desc  || '';
     const type  = el.dataset.type  || 'placeholder';
     const src   = el.dataset.src   || '';
+    const images = (el.dataset.images || '').split(',').map(s => s.trim()).filter(Boolean);
 
     document.getElementById('lbTitle').textContent = title;
     document.getElementById('lbTag').textContent   = tag;
@@ -319,6 +340,10 @@
     const media = document.getElementById('lbMedia');
     if (type === 'iframe' && src) {
       media.innerHTML = `<iframe src="${src}" loading="lazy"></iframe>`;
+    } else if (type === 'gallery' && images.length) {
+      galleryImages = images;
+      gallerySlide = 0;
+      renderGallerySlide();
     } else if (type === 'img' && src) {
       media.innerHTML = `<img src="${src}" alt="${title}" />`;
     } else {
@@ -334,10 +359,38 @@
     }
   }
 
+  function renderGallerySlide() {
+    const media = document.getElementById('lbMedia');
+    if (!galleryImages.length) {
+      media.innerHTML = '<div class="lb-placeholder"><p>Sem imagens para este projeto.</p></div>';
+      return;
+    }
+
+    const dots = galleryImages
+      .map((_, i) => `<span class="lb-gallery-dot ${i === gallerySlide ? 'active' : ''}"></span>`)
+      .join('');
+
+    media.innerHTML = `
+      <div class="lb-gallery">
+        <button class="lb-gallery-btn prev" onclick="event.stopPropagation();galleryNav(-1)">←</button>
+        <img src="${galleryImages[gallerySlide]}" alt="Preview ${gallerySlide + 1}" loading="lazy" />
+        <button class="lb-gallery-btn next" onclick="event.stopPropagation();galleryNav(1)">→</button>
+        <div class="lb-gallery-dots">${dots}</div>
+      </div>`;
+  }
+
+  function galleryNav(dir) {
+    if (!galleryImages.length) return;
+    gallerySlide = (gallerySlide + dir + galleryImages.length) % galleryImages.length;
+    renderGallerySlide();
+  }
+
   function fecharLightbox() {
     document.getElementById('lightbox').classList.remove('open');
     document.body.style.overflow = '';
     document.getElementById('lbMedia').innerHTML = '';
+    galleryImages = [];
+    gallerySlide = 0;
   }
 
   function fecharLightboxFora(e) {
