@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1920">
+  <defs>
+    <linearGradient id="bg2" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1c1024"/>
+      <stop offset="100%" stop-color="#3a1f4d"/>
+    </linearGradient>
+  </defs>
+  <rect width="1080" height="1920" fill="url(#bg2)"/>
+  <rect x="64" y="64" width="952" height="1792" rx="52" fill="#130c1b" stroke="#ffffff24"/>
+
+  <circle cx="540" cy="300" r="132" fill="#7b4dff"/>
+  <circle cx="540" cy="300" r="124" fill="#28103f"/>
+  <text x="540" y="347" text-anchor="middle" fill="#fff" font-size="62" font-family="Arial" font-weight="700">JD</text>
+
+  <text x="540" y="565" text-anchor="middle" fill="#ffffff" font-size="68" font-family="Arial" font-weight="700">@joaodahan.dev</text>
+  <text x="540" y="620" text-anchor="middle" fill="#d3c7e9" font-size="30" font-family="Arial">Sites • Landing Pages • Sistemas</text>
+
+  <g font-family="Arial" fill="#fff" text-anchor="middle" font-weight="700">
+    <rect x="120" y="760" width="840" height="125" rx="24" fill="#7b4dff"/><text x="540" y="835" font-size="38">Site Principal</text>
+    <rect x="120" y="915" width="840" height="125" rx="24" fill="#261833" stroke="#7b4dff"/><text x="540" y="990" font-size="38">Link in Bio</text>
+    <rect x="120" y="1070" width="840" height="125" rx="24" fill="#261833" stroke="#7b4dff"/><text x="540" y="1145" font-size="38">Área do Cliente</text>
+    <rect x="120" y="1225" width="840" height="125" rx="24" fill="#261833" stroke="#7b4dff"/><text x="540" y="1300" font-size="38">Catálogo de Projetos</text>
+    <rect x="120" y="1380" width="840" height="125" rx="24" fill="#261833" stroke="#7b4dff"/><text x="540" y="1455" font-size="38">Contato por E-mail</text>
+  </g>
+
+  <rect x="300" y="1640" width="480" height="80" rx="40" fill="#0f0a16" stroke="#7b4dff"/>
+  <text x="540" y="1692" text-anchor="middle" fill="#bea5ea" font-size="30" font-family="Arial">Atualizado • 2026</text>
+</svg>
