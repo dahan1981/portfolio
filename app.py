@@ -218,6 +218,7 @@ def solicitar_orcamento():
         'sucesso'
     )
 
+
     return redirect(f"https://wa.me/{WHATSAPP_ORCAMENTO_NUMERO}?text={texto}")
 
 
