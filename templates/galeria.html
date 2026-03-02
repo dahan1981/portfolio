@@ -234,21 +234,14 @@
   <div class="galeria-item" data-categoria="landing"
        data-title="Coleção Link in Bio"
        data-tag="Landing Page / HTML / CSS"
-       data-desc="6 variações de landing page para uso como Link in Bio. Layouts distintos com identidade visual própria. Otimizados para mobile e carregamento rápido."
-       data-type="gallery"
-       data-images="/static/portfolio/linkbio-1.svg,/static/portfolio/linkbio-2.svg,/static/portfolio/linkbio-3.svg,/static/portfolio/linkbio-4.svg"
+
        onclick="abrirLightbox(this)">
     <div class="gi-overlay">
       <span class="gi-overlay-icon">🔗</span>
       <p class="gi-overlay-title">Coleção Link in Bio</p>
-      <p class="gi-overlay-tag">6 variações</p>
+      <p class="gi-overlay-tag">4 variações</p>
     </div>
-    <div style="width:100%;height:100%;background:linear-gradient(135deg,#1a0f2e,#2d1042);display:flex;align-items:center;justify-content:center;">
-      <div style="text-align:center;">
-        <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:#9b33b0;letter-spacing:-1px;">Link<br>in Bio</div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:#5a5268;letter-spacing:2px;margin-top:0.5rem;">6 LAYOUTS</div>
-      </div>
-    </div>
+    <img class="gi-thumb" src="/static/portfolio/linkbio-1.jpg" alt="Coleção Link in Bio" loading="lazy" onerror="this.onerror=null;this.src='/static/portfolio/linkbio-1.svg'" />
   </div>
 
   <!-- ITEM 3 — CEMU -->
@@ -373,7 +366,7 @@
     media.innerHTML = `
       <div class="lb-gallery">
         <button class="lb-gallery-btn prev" onclick="event.stopPropagation();galleryNav(-1)">←</button>
-        <img src="${galleryImages[gallerySlide]}" alt="Preview ${gallerySlide + 1}" loading="lazy" />
+
         <button class="lb-gallery-btn next" onclick="event.stopPropagation();galleryNav(1)">→</button>
         <div class="lb-gallery-dots">${dots}</div>
       </div>`;
