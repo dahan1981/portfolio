@@ -234,18 +234,14 @@
   <div class="galeria-item" data-categoria="landing"
        data-title="Coleção Link in Bio"
        data-tag="Landing Page / HTML / CSS"
-       data-desc="4 variações reais de landing page para uso como Link in Bio. Layouts com identidade visual própria e foco mobile."
-       data-type="gallery"
-       data-images="/static/portfolio/linkbio-1.jpg,/static/portfolio/linkbio-2.jpg,/static/portfolio/linkbio-3.jpg,/static/portfolio/linkbio-4.jpg"
+
        onclick="abrirLightbox(this)">
     <div class="gi-overlay">
       <span class="gi-overlay-icon">🔗</span>
       <p class="gi-overlay-title">Coleção Link in Bio</p>
       <p class="gi-overlay-tag">4 variações</p>
     </div>
-    <img class="gi-thumb" src="/static/portfolio/linkbio-1.jpg" alt="Coleção Link in Bio" loading="lazy" />
-  </div>
-
+    
   <!-- ITEM 3 — CEMU -->
   <div class="galeria-item" data-categoria="site"
        data-title="CEMU — Centro Educacional de Muriqui"
@@ -312,7 +308,6 @@
   let galleryImages = [];
   let gallerySlide = 0;
 
-
   function abrirLightbox(el) {
     currentIdx = items.indexOf(el);
     renderLightbox(currentIdx);
@@ -369,7 +364,7 @@
     media.innerHTML = `
       <div class="lb-gallery">
         <button class="lb-gallery-btn prev" onclick="event.stopPropagation();galleryNav(-1)">←</button>
-        <img src="${galleryImages[gallerySlide]}" alt="Preview ${gallerySlide + 1}" loading="lazy" />
+
         <button class="lb-gallery-btn next" onclick="event.stopPropagation();galleryNav(1)">→</button>
         <div class="lb-gallery-dots">${dots}</div>
       </div>`;
