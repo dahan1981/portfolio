@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual env
+.venv/
+venv/
+env/
+
+# Flask / local db
+instance/
+*.db
+*.sqlite3
+
+# Environment variables
+.env
