@@ -183,7 +183,7 @@ def solicitar_orcamento():
     mensagem = request.form.get('mensagem', '').strip()
 
     if not nome or not email or not tipo_servico:
-        flash('Preencha todos os campos obrigatórios.', 'erro')
+        flash('Preencha todos os campos obrigat?rios.', 'erro')
         return redirect(url_for('orcamentos'))
 
     cliente_id = session.get('cliente_id')
@@ -220,10 +220,16 @@ def solicitar_orcamento():
 
     return redirect(f"https://wa.me/{WHATSAPP_ORCAMENTO_NUMERO}?text={texto}")
 
+    return redirect(f"https://wa.me/{WHATSAPP_ORCAMENTO_NUMERO}?text={texto}")
 
-# ══════════════════════════════════════
-# CARRINHO
-# ══════════════════════════════════════
+    return redirect(f"https://wa.me/{WHATSAPP_ORCAMENTO_NUMERO}?text={texto}")
+
+    return redirect(f"https://wa.me/{WHATSAPP_ORCAMENTO_NUMERO}?text={texto}")
+
+    return redirect(f"https://wa.me/{WHATSAPP_ORCAMENTO_NUMERO}?text={texto}")
+
+    return redirect(f"https://wa.me/{WHATSAPP_ORCAMENTO_NUMERO}?text={texto}")
+
 
 @app.route('/carrinho')
 @cliente_required
@@ -457,12 +463,31 @@ def webhook_abacatepay():
     return jsonify({'ok': True})
 
 
+def aplicar_migracoes_basicas():
+    """Aplica ajustes simples de schema em bancos já existentes (sem Alembic)."""
+    comandos = [
+        "ALTER TABLE orcamento ADD COLUMN descricao_servico VARCHAR(200)",
+        "ALTER TABLE orcamento ADD COLUMN criado_em TIMESTAMP",
+        "ALTER TABLE orcamento ADD COLUMN pago_em TIMESTAMP",
+        "ALTER TABLE cliente ADD COLUMN criado_em TIMESTAMP",
+    ]
+
+    for sql in comandos:
+        try:
+            db.session.execute(db.text(sql))
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
+
+
+
 # ══════════════════════════════════════
 # INIT
 # ══════════════════════════════════════
 
 with app.app_context():
     db.create_all()
+    aplicar_migracoes_basicas()
 
 if __name__ == '__main__':
     app.run(debug=False)
