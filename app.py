@@ -220,6 +220,8 @@ def solicitar_orcamento():
 
     return redirect(f"https://wa.me/{WHATSAPP_ORCAMENTO_NUMERO}?text={texto}")
 
+    return redirect(f"https://wa.me/{WHATSAPP_ORCAMENTO_NUMERO}?text={texto}")
+
 
 @app.route('/carrinho')
 @cliente_required

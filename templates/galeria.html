@@ -234,7 +234,9 @@
   <div id="item-linkbio" class="galeria-item" data-categoria="landing"
        data-title="Coleção Link in Bio"
        data-tag="Landing Page / HTML / CSS"
-
+       data-desc="4 variações reais de landing page para uso como Link in Bio. Layouts com identidade visual própria e foco mobile."
+       data-type="gallery"
+       data-images="/static/portfolio/linkbio-1.jpg,/static/portfolio/linkbio-2.jpg,/static/portfolio/linkbio-3.jpg,/static/portfolio/linkbio-4.jpg"
        onclick="abrirLightbox(this)">
     <div class="gi-overlay">
       <span class="gi-overlay-icon">🔗</span>
@@ -333,18 +335,29 @@
     const src   = el.dataset.src   || '';
     const images = (el.dataset.images || '').split(',').map(s => s.trim()).filter(Boolean);
 
+    // Proteção contra merge conflitante: garante que o item Link in Bio continue como galeria
+    const isLinkBio = el.id === 'item-linkbio' || (title || '').toLowerCase().includes('link in bio');
+    const fallbackLinkBioImages = [
+      '/static/portfolio/linkbio-1.jpg',
+      '/static/portfolio/linkbio-2.jpg',
+      '/static/portfolio/linkbio-3.jpg',
+      '/static/portfolio/linkbio-4.jpg',
+    ];
+    const resolvedType = isLinkBio ? 'gallery' : type;
+    const resolvedImages = (isLinkBio && !images.length) ? fallbackLinkBioImages : images;
+
     document.getElementById('lbTitle').textContent = title;
     document.getElementById('lbTag').textContent   = tag;
     document.getElementById('lbDesc').textContent  = desc;
 
     const media = document.getElementById('lbMedia');
-    if (type === 'iframe' && src) {
+    if (resolvedType === 'iframe' && src) {
       media.innerHTML = `<iframe src="${src}" loading="lazy"></iframe>`;
-    } else if (type === 'gallery' && images.length) {
-      galleryImages = images;
+    } else if (resolvedType === 'gallery' && resolvedImages.length) {
+      galleryImages = resolvedImages;
       gallerySlide = 0;
       renderGallerySlide();
-    } else if (type === 'img' && src) {
+    } else if (resolvedType === 'img' && src) {
       media.innerHTML = `<img src="${src}" alt="${title}" />`;
     } else {
       // Extrai o ícone do overlay
@@ -374,7 +387,6 @@
       <div class="lb-gallery">
         <button class="lb-gallery-btn prev" onclick="event.stopPropagation();galleryNav(-1)">←</button>
         <img src="${galleryImages[gallerySlide]}" alt="Preview ${gallerySlide + 1}" loading="lazy" />
-
         <button class="lb-gallery-btn next" onclick="event.stopPropagation();galleryNav(1)">→</button>
         <div class="lb-gallery-dots">${dots}</div>
       </div>`;
