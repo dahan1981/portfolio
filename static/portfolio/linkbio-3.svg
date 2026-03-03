@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1920">
+  <defs>
+    <linearGradient id="bg3" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0f1418"/>
+      <stop offset="100%" stop-color="#1f3b3f"/>
+    </linearGradient>
+  </defs>
+  <rect width="1080" height="1920" fill="url(#bg3)"/>
+  <rect x="80" y="80" width="920" height="1760" rx="48" fill="#0b1012" stroke="#4ecdc455" stroke-width="2"/>
+
+  <g>
+    <circle cx="540" cy="310" r="120" fill="#4ecdc4"/>
+    <rect x="456" y="252" width="168" height="120" rx="60" fill="#173536"/>
+    <circle cx="500" cy="300" r="12" fill="#4ecdc4"/>
+    <circle cx="580" cy="300" r="12" fill="#4ecdc4"/>
+  </g>
+
+  <text x="540" y="550" text-anchor="middle" fill="#fff" font-size="66" font-family="Arial" font-weight="700">Link in Bio • Dark</text>
+  <text x="540" y="605" text-anchor="middle" fill="#b4d8d5" font-size="30" font-family="Arial">Experiência focada em conversão</text>
+
+  <g font-family="Arial" fill="#e9ffff" font-size="34" font-weight="700">
+    <rect x="160" y="740" width="760" height="108" rx="18" fill="#133338" stroke="#4ecdc4"/><text x="540" y="806" text-anchor="middle">⚡ Landing Pages que vendem</text>
+    <rect x="160" y="880" width="760" height="108" rx="18" fill="#133338" stroke="#4ecdc4"/><text x="540" y="946" text-anchor="middle">🧾 Sistema de Orçamentos</text>
+    <rect x="160" y="1020" width="760" height="108" rx="18" fill="#133338" stroke="#4ecdc4"/><text x="540" y="1086" text-anchor="middle">🛒 Carrinho com Aprovação</text>
+    <rect x="160" y="1160" width="760" height="108" rx="18" fill="#133338" stroke="#4ecdc4"/><text x="540" y="1226" text-anchor="middle">📊 Painel Administrativo</text>
+    <rect x="160" y="1300" width="760" height="108" rx="18" fill="#133338" stroke="#4ecdc4"/><text x="540" y="1366" text-anchor="middle">📱 Botão direto WhatsApp</text>
+    <rect x="160" y="1440" width="760" height="108" rx="18" fill="#133338" stroke="#4ecdc4"/><text x="540" y="1506" text-anchor="middle">🔗 Todos os links em um lugar</text>
+  </g>
+
+  <text x="540" y="1710" text-anchor="middle" fill="#93beb9" font-size="28" font-family="Arial">www.dahandev.site/link-in-bio</text>
+</svg>
