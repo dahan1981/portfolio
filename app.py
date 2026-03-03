@@ -226,6 +226,8 @@ def solicitar_orcamento():
 
     return redirect(f"https://wa.me/{WHATSAPP_ORCAMENTO_NUMERO}?text={texto}")
 
+    return redirect(f"https://wa.me/{WHATSAPP_ORCAMENTO_NUMERO}?text={texto}")
+
 
 @app.route('/carrinho')
 @cliente_required
@@ -388,6 +390,7 @@ def admin_atualizar_status(id):
     orc = Orcamento.query.get_or_404(id)
     novo_status = request.form.get('status')
     novo_valor = request.form.get('valor')
+    pagamento_url_manual = request.form.get('pagamento_url_manual', '').strip()
 
     if novo_valor:
         try:
@@ -397,6 +400,11 @@ def admin_atualizar_status(id):
 
     if novo_status:
         orc.status = novo_status
+
+    if pagamento_url_manual:
+        orc.pagamento_url = pagamento_url_manual
+        if orc.status in ('pendente', 'aprovado', 'recusado'):
+            orc.status = 'aguardando_pagamento'
 
     # Quando admin aprova, gera link de pagamento automaticamente
     if novo_status == 'aprovado' and orc.valor:
@@ -409,7 +417,7 @@ def admin_atualizar_status(id):
         else:
             flash(f'Orçamento aprovado, mas erro ao gerar pagamento: {erro}', 'aviso')
     else:
-        flash(f'Orçamento #{id} atualizado para: {novo_status}.', 'sucesso')
+        flash(f'Orçamento #{id} atualizado com sucesso.', 'sucesso')
 
     db.session.commit()
     return redirect(url_for('admin_painel'))
