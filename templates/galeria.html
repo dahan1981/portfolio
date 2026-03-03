@@ -140,6 +140,9 @@
   .lb-media img { width: 100%; height: 100%; object-fit: contain; display: block; max-height: 60vh; }
   .lb-gallery { position: relative; width: 100%; height: 60vh; background: #07070b; }
   .lb-gallery img { width: 100%; height: 100%; object-fit: contain; display: block; }
+  .lb-gallery img.slide-in-right { animation: slideInRight .28s ease; }
+  .lb-gallery img.slide-in-left { animation: slideInLeft .28s ease; }
+  .lb-gallery img.slide-fade { animation: fadeIn .24s ease; }
   .lb-gallery-btn {
     position: absolute; top: 50%; transform: translateY(-50%); z-index: 2;
     border: 1px solid rgba(255,255,255,.18); background: rgba(0,0,0,.45); color: #fff;
@@ -179,6 +182,18 @@
   }
   .lb-nav-btn:hover { border-color: var(--accent); color: var(--accent); }
 
+  @keyframes slideInRight {
+    from { opacity: 0; transform: translateX(28px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-28px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(25px); }
     to   { opacity: 1; transform: translateY(0); }
@@ -317,6 +332,7 @@
   let currentIdx = 0;
   let galleryImages = [];
   let gallerySlide = 0;
+  let galleryDirection = 0;
 
 
   function abrirLightbox(el) {
@@ -356,6 +372,7 @@
     } else if (resolvedType === 'gallery' && resolvedImages.length) {
       galleryImages = resolvedImages;
       gallerySlide = 0;
+      galleryDirection = 0;
       renderGallerySlide();
     } else if (resolvedType === 'img' && src) {
       media.innerHTML = `<img src="${src}" alt="${title}" />`;
@@ -383,10 +400,12 @@
       .map((_, i) => `<span class="lb-gallery-dot ${i === gallerySlide ? 'active' : ''}"></span>`)
       .join('');
 
+    const animationClass = galleryDirection > 0 ? 'slide-in-right' : (galleryDirection < 0 ? 'slide-in-left' : 'slide-fade');
+
     media.innerHTML = `
       <div class="lb-gallery">
         <button class="lb-gallery-btn prev" onclick="event.stopPropagation();galleryNav(-1)">←</button>
-        <img src="${galleryImages[gallerySlide]}" alt="Preview ${gallerySlide + 1}" loading="lazy" />
+        <img class="${animationClass}" src="${galleryImages[gallerySlide]}" alt="Preview ${gallerySlide + 1}" loading="lazy" />
         <button class="lb-gallery-btn next" onclick="event.stopPropagation();galleryNav(1)">→</button>
         <div class="lb-gallery-dots">${dots}</div>
       </div>`;
@@ -394,6 +413,7 @@
 
   function galleryNav(dir) {
     if (!galleryImages.length) return;
+    galleryDirection = dir;
     gallerySlide = (gallerySlide + dir + galleryImages.length) % galleryImages.length;
     renderGallerySlide();
   }
@@ -404,6 +424,7 @@
     document.getElementById('lbMedia').innerHTML = '';
     galleryImages = [];
     gallerySlide = 0;
+    galleryDirection = 0;
   }
 
   function fecharLightboxFora(e) {
