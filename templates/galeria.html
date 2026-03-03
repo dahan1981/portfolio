@@ -140,9 +140,9 @@
   .lb-media img { width: 100%; height: 100%; object-fit: contain; display: block; max-height: 60vh; }
   .lb-gallery { position: relative; width: 100%; height: 60vh; background: #07070b; }
   .lb-gallery img { width: 100%; height: 100%; object-fit: contain; display: block; }
-  .lb-gallery img.slide-in-right { animation: slideInRight .28s ease; }
-  .lb-gallery img.slide-in-left { animation: slideInLeft .28s ease; }
-  .lb-gallery img.slide-fade { animation: fadeIn .24s ease; }
+  .lb-gallery img.slide-in-right { animation: slideInRight .46s cubic-bezier(.22,.7,.18,1); }
+  .lb-gallery img.slide-in-left { animation: slideInLeft .46s cubic-bezier(.22,.7,.18,1); }
+  .lb-gallery img.slide-fade { animation: fadeIn .34s ease-out; }
   .lb-gallery-btn {
     position: absolute; top: 50%; transform: translateY(-50%); z-index: 2;
     border: 1px solid rgba(255,255,255,.18); background: rgba(0,0,0,.45); color: #fff;
@@ -183,21 +183,32 @@
   .lb-nav-btn:hover { border-color: var(--accent); color: var(--accent); }
 
   @keyframes slideInRight {
-    from { opacity: 0; transform: translateX(28px); }
-    to { opacity: 1; transform: translateX(0); }
+    0% { opacity: 0; transform: translateX(90px) scale(.985); filter: blur(2px); }
+    55% { opacity: 1; transform: translateX(-10px) scale(1.01); filter: blur(0); }
+    100% { opacity: 1; transform: translateX(0) scale(1); filter: blur(0); }
   }
   @keyframes slideInLeft {
-    from { opacity: 0; transform: translateX(-28px); }
-    to { opacity: 1; transform: translateX(0); }
+    0% { opacity: 0; transform: translateX(-90px) scale(.985); filter: blur(2px); }
+    55% { opacity: 1; transform: translateX(10px) scale(1.01); filter: blur(0); }
+    100% { opacity: 1; transform: translateX(0) scale(1); filter: blur(0); }
   }
   @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from { opacity: 0; transform: scale(.995); }
+    to { opacity: 1; transform: scale(1); }
   }
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(25px); }
     to   { opacity: 1; transform: translateY(0); }
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    .lb-gallery img.slide-in-right,
+    .lb-gallery img.slide-in-left,
+    .lb-gallery img.slide-fade {
+      animation: none !important;
+    }
+  }
+
   @media (max-width: 768px) {
     .page-hero { padding: 8rem 1.5rem 3rem; }
     .galeria-filters { padding: 0 1.5rem 2rem; }
