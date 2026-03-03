@@ -256,6 +256,7 @@
                 <!-- Atualizar status / valor -->
                 <form method="POST" action="{{ url_for('admin_atualizar_status', id=orc.id) }}" class="action-form">
                   <input type="text" name="valor" placeholder="Valor" value="{{ orc.valor or '' }}" title="Informe o valor para gerar pagamento" />
+                  <input type="url" name="pagamento_url_manual" placeholder="Link de pagamento manual" value="{{ orc.pagamento_url or '' }}" title="Cole manualmente um link de pagamento para o cliente" />
                   <select name="status">
                     <option value="pendente"              {% if orc.status == 'pendente'              %}selected{% endif %}>Pendente</option>
                     <option value="aprovado"              {% if orc.status == 'aprovado'              %}selected{% endif %}>Aprovado</option>
