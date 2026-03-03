@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1920">
+  <defs>
+    <linearGradient id="bg4" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#121212"/>
+      <stop offset="100%" stop-color="#3f2b19"/>
+    </linearGradient>
+  </defs>
+  <rect width="1080" height="1920" fill="url(#bg4)"/>
+
+  <rect x="100" y="90" width="880" height="1740" rx="60" fill="#0f0f0f" stroke="#f4b56d4d"/>
+  <rect x="100" y="90" width="880" height="270" rx="60" fill="#1f1710"/>
+
+  <circle cx="255" cy="225" r="85" fill="#f4b56d"/>
+  <text x="380" y="210" fill="#fff" font-size="56" font-family="Arial" font-weight="700">João Dahan</text>
+  <text x="380" y="266" fill="#e3c7a3" font-size="30" font-family="Arial">Desenvolvedor Full Stack</text>
+
+  <g font-family="Arial" font-size="34" fill="#fff" font-weight="700">
+    <rect x="150" y="430" width="780" height="118" rx="20" fill="#f4b56d"/>
+    <text x="540" y="503" text-anchor="middle" fill="#1f140a">🚀 Quero um site profissional</text>
+
+    <rect x="150" y="580" width="780" height="118" rx="20" fill="#21170d" stroke="#f4b56d"/>
+    <text x="540" y="653" text-anchor="middle">🧠 Ver serviços completos</text>
+
+    <rect x="150" y="730" width="780" height="118" rx="20" fill="#21170d" stroke="#f4b56d"/>
+    <text x="540" y="803" text-anchor="middle">📁 Galeria de trabalhos</text>
+
+    <rect x="150" y="880" width="780" height="118" rx="20" fill="#21170d" stroke="#f4b56d"/>
+    <text x="540" y="953" text-anchor="middle">📞 Fale comigo agora</text>
+
+    <rect x="150" y="1030" width="780" height="118" rx="20" fill="#21170d" stroke="#f4b56d"/>
+    <text x="540" y="1103" text-anchor="middle">🎯 Link in Bio Premium</text>
+  </g>
+
+  <rect x="180" y="1235" width="720" height="420" rx="24" fill="#1a130d" stroke="#f4b56d33"/>
+  <text x="540" y="1310" text-anchor="middle" fill="#f4b56d" font-size="30" font-family="Arial" font-weight="700">Preview dos principais links</text>
+  <text x="210" y="1385" fill="#e9dccb" font-size="28" font-family="Arial">• Página inicial do portfólio</text>
+  <text x="210" y="1445" fill="#e9dccb" font-size="28" font-family="Arial">• Formulário com envio ao admin</text>
+  <text x="210" y="1505" fill="#e9dccb" font-size="28" font-family="Arial">• Botão de orçamento + WhatsApp</text>
+  <text x="210" y="1565" fill="#e9dccb" font-size="28" font-family="Arial">• Área do cliente com carrinho</text>
+
+  <text x="540" y="1755" text-anchor="middle" fill="#c39a6c" font-size="27" font-family="Arial">dahandev.site • link in bio</text>
+</svg>

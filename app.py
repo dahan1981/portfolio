@@ -2,6 +2,7 @@ import os
 import json
 import requests
 from datetime import datetime
+from urllib.parse import quote
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
@@ -24,6 +25,7 @@ bcrypt = Bcrypt(app)
 ABACATEPAY_API_KEY = os.environ.get('ABACATEPAY_API_KEY', '')
 ABACATEPAY_BASE_URL = 'https://api.abacatepay.com/v1'
 ADMIN_PASSWORD_PLAIN = os.environ.get('ADMIN_PASSWORD', 'Dahan1005@')
+WHATSAPP_ORCAMENTO_NUMERO = os.environ.get('WHATSAPP_ORCAMENTO_NUMERO', '5521970913261')
 
 
 # ══════════════════════════════════════
@@ -92,17 +94,27 @@ def cliente_required(f):
     from functools import wraps
     @wraps(f)
     def decorated(*args, **kwargs):
-        if not session.get('cliente_id'):
+        cliente_id = session.get('cliente_id')
+        if not cliente_id:
             flash('Você precisa estar logado para acessar essa área.', 'aviso')
             session['redirect_after_login'] = request.url
             return redirect(url_for('login'))
+
+        # Sessão antiga/inválida: evita erro em carrinho/área do cliente.
+        if not db.session.get(Cliente, cliente_id):
+            session.pop('cliente_id', None)
+            session.pop('cliente_nome', None)
+            flash('Sua sessão expirou. Faça login novamente.', 'aviso')
+            session['redirect_after_login'] = request.url
+            return redirect(url_for('login'))
+
         return f(*args, **kwargs)
     return decorated
 
 
 def gerar_pagamento_abacatepay(orcamento):
     if not ABACATEPAY_API_KEY:
-        return None, 'Chave AbacatePay não configurada'
+        return None, None, 'Chave AbacatePay não configurada'
 
     headers = {
         'Authorization': f'Bearer {ABACATEPAY_API_KEY}',
@@ -119,7 +131,7 @@ def gerar_pagamento_abacatepay(orcamento):
     }
     try:
         resp = requests.post(f'{ABACATEPAY_BASE_URL}/billing/create', json=payload, headers=headers)
-        data = resp.json()
+        data = resp.json() if resp.content else {}
         if resp.status_code == 200:
             pagamento_id = data.get('id')
             pagamento_url = data.get('url')
@@ -189,8 +201,24 @@ def solicitar_orcamento():
     db.session.add(orc)
     db.session.commit()
 
-    flash(f'Orçamento #{orc.id} enviado com sucesso! Acompanhe pelo carrinho.', 'sucesso')
-    return redirect(url_for('carrinho'))
+    # Continua indo para o painel admin via banco e já monta mensagem para WhatsApp
+    partes = [
+        f"📩 Novo orçamento #{orc.id}",
+        f"Nome: {orc.nome}",
+        f"Email: {orc.email}",
+        f"Telefone: {orc.telefone or '-'}",
+        f"Serviço: {orc.tipo_servico}",
+        f"Descrição: {orc.descricao_servico or '-'}",
+        f"Detalhes: {orc.mensagem or '-'}",
+    ]
+    texto = quote('\n'.join(partes))
+
+    flash(
+        f'Orçamento #{orc.id} enviado com sucesso! Seus dados também foram preparados no WhatsApp.',
+        'sucesso'
+    )
+
+    return redirect(f"https://wa.me/{WHATSAPP_ORCAMENTO_NUMERO}?text={texto}")
 
 
 # ══════════════════════════════════════
@@ -201,7 +229,7 @@ def solicitar_orcamento():
 @cliente_required
 def carrinho():
     cliente_id = session.get('cliente_id')
-    cliente = Cliente.query.get(cliente_id)
+    cliente = db.session.get(Cliente, cliente_id)
     # Mostra todos os orçamentos do cliente no carrinho
     meus_orcamentos = Orcamento.query.filter_by(cliente_id=cliente_id)\
         .order_by(Orcamento.criado_em.desc()).all()
@@ -258,6 +286,10 @@ def cadastro():
         senha = request.form.get('senha', '')
         confirmar = request.form.get('confirmar_senha', '')
 
+        if not nome or not email:
+            flash('Nome e email são obrigatórios.', 'erro')
+            return render_template('cadastro.html')
+
         if senha != confirmar:
             flash('As senhas não coincidem.', 'erro')
             return render_template('cadastro.html')
@@ -286,7 +318,7 @@ def cadastro():
 @app.route('/area-cliente')
 @cliente_required
 def area_cliente():
-    cliente = Cliente.query.get(session['cliente_id'])
+    cliente = db.session.get(Cliente, session['cliente_id'])
     orcamentos_cliente = Orcamento.query.filter_by(cliente_id=cliente.id)\
         .order_by(Orcamento.criado_em.desc()).all()
     return render_template('cliente.html', cliente=cliente, orcamentos=orcamentos_cliente)
@@ -354,6 +386,7 @@ def admin_atualizar_status(id):
     orc = Orcamento.query.get_or_404(id)
     novo_status = request.form.get('status')
     novo_valor = request.form.get('valor')
+    pagamento_url_manual = request.form.get('pagamento_url_manual', '').strip()
 
     if novo_valor:
         try:
@@ -363,6 +396,11 @@ def admin_atualizar_status(id):
 
     if novo_status:
         orc.status = novo_status
+
+    if pagamento_url_manual:
+        orc.pagamento_url = pagamento_url_manual
+        if orc.status in ('pendente', 'aprovado', 'recusado'):
+            orc.status = 'aguardando_pagamento'
 
     # Quando admin aprova, gera link de pagamento automaticamente
     if novo_status == 'aprovado' and orc.valor:
@@ -375,7 +413,7 @@ def admin_atualizar_status(id):
         else:
             flash(f'Orçamento aprovado, mas erro ao gerar pagamento: {erro}', 'aviso')
     else:
-        flash(f'Orçamento #{id} atualizado para: {novo_status}.', 'sucesso')
+        flash(f'Orçamento #{id} atualizado com sucesso.', 'sucesso')
 
     db.session.commit()
     return redirect(url_for('admin_painel'))
